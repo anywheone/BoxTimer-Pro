@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { Calendar, Home, Inbox, BarChart3, Settings } from "lucide-react"
 
 import {
   Sidebar,
@@ -14,30 +14,33 @@ import {
 } from "@/components/ui/sidebar"
 
 // Menu items.
-const items = [
+const explanationItems = [
   {
-    title: "Home",
-    url: "#",
+    title: "タイムボックス法",
+    url: "/",
     icon: Home,
   },
   {
-    title: "Inbox",
-    url: "#",
+    title: "プランニングファラシー",
+    url: "/planning-fallacy",
     icon: Inbox,
   },
+]
+
+const functionItems = [
   {
-    title: "Calendar",
-    url: "#",
+    title: "タイムボックス管理",
+    url: "/timebox-manager",
     icon: Calendar,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "振り返り",
+    url: "/review",
+    icon: BarChart3,
   },
   {
-    title: "Settings",
-    url: "#",
+    title: "設定",
+    url: "/settings",
     icon: Settings,
   },
 ]
@@ -48,7 +51,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <div className="flex items-center justify-between px-2">
-            <SidebarGroupLabel className="px-0">Features</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-0">説明</SidebarGroupLabel>
             <SidebarTrigger className="h-6 w-6 group-data-[collapsible=icon]:hidden" />
           </div>
           {/* Collapsed state trigger */}
@@ -57,7 +60,25 @@ export function AppSidebar() {
           </div>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {explanationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-2">機能</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {functionItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>

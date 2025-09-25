@@ -7,9 +7,10 @@ export default function Header() {
       <Image
         src="/BoxTimer_Logo.png"
         alt="サイトロゴ"
-        width={220}
-        height={0}
+        width={180}
+        height={120}
         priority
+        className="h-24 w-auto"
       />
     </Link>
   )
