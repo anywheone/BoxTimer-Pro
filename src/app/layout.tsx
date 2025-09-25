@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/ui/app-sidebar"
+import Header from './header'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,13 +19,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <SidebarProvider>
-      <AppSidebar />
-      <main>
-        <SidebarTrigger />
-        {children}
-      </main>
-      </SidebarProvider>
+      <body className={inter.className}>
+        {/* 固定ヘッダー */}
+        <div className="fixed top-0 left-0 right-0 h-16 flex items-center bg-sidebar border-b border-sidebar-border">
+          <Header />
+        </div>
+
+        {/* ヘッダーの下にサイドバーとメインコンテンツ */}
+        <div className="h-screen">
+          <SidebarProvider>
+            <AppSidebar />
+            <main className="flex-1 pt-16">
+              {children}
+            </main>
+          </SidebarProvider>
+        </div>
+      </body>
     </html>
   )
 }
+

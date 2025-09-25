@@ -6,9 +6,11 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar"
 
 // Menu items.
@@ -42,10 +44,17 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon" className="relative">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <div className="flex items-center justify-between px-2">
+            <SidebarGroupLabel className="px-0">Features</SidebarGroupLabel>
+            <SidebarTrigger className="h-6 w-6 group-data-[collapsible=icon]:hidden" />
+          </div>
+          {/* Collapsed state trigger */}
+          <div className="hidden group-data-[collapsible=icon]:flex justify-center p-2">
+            <SidebarTrigger className="h-8 w-8" />
+          </div>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
