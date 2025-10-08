@@ -57,6 +57,17 @@ export default function TimeBoxManager() {
     }
   }, [])
 
+  // Update document title with countdown
+  useEffect(() => {
+    if (timerState.activeTimer && timerState.isRunning) {
+      const mins = Math.floor(timerState.timeRemaining / 60)
+      const secs = timerState.timeRemaining % 60
+      document.title = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')} - BoxTimer Pro`
+    } else {
+      document.title = 'タイムボックス管理 - BoxTimer Pro'
+    }
+  }, [timerState.activeTimer, timerState.timeRemaining, timerState.isRunning])
+
   // Request notification permission
   useEffect(() => {
     const requestNotificationPermission = async () => {
@@ -128,21 +139,32 @@ export default function TimeBoxManager() {
   }
 
   const completeTimeBox = async (id: string) => {
-    const updatedTimeBoxes = timeBoxes.map(box =>
-      box.id === id ? { ...box, completed: true } : box
-    )
-    const updatedTimeBox = updatedTimeBoxes.find(box => box.id === id)
+    const timeBox = timeBoxes.find(box => box.id === id)
+    if (!timeBox) return
 
-    if (updatedTimeBox) {
-      try {
-        await timeBoxDB.updateTimeBox(updatedTimeBox)
-        setTimeBoxes(updatedTimeBoxes)
-        if (timerState.activeTimer === id) {
-          timerManager.clearTimer()
-        }
-      } catch (error) {
-        console.error('Failed to update timebox:', error)
+    // Calculate actual duration if timer is active
+    let actualDuration = timeBox.actualDuration
+    if (timerState.activeTimer === id) {
+      actualDuration = (timeBox.duration * 60) - timerState.timeRemaining
+    } else {
+      // タイマーなしで完了した場合は、設定時間全体を実施時間とする
+      actualDuration = timeBox.duration * 60
+    }
+
+    const updatedTimeBox = {
+      ...timeBox,
+      completed: true,
+      actualDuration
+    }
+
+    try {
+      await timeBoxDB.updateTimeBox(updatedTimeBox)
+      setTimeBoxes(timeBoxes.map(box => box.id === id ? updatedTimeBox : box))
+      if (timerState.activeTimer === id) {
+        timerManager.clearTimer()
       }
+    } catch (error) {
+      console.error('Failed to update timebox:', error)
     }
   }
 

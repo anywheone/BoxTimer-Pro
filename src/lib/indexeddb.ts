@@ -1,7 +1,8 @@
 interface TimeBox {
   id: string
   title: string
-  duration: number
+  duration: number // 設定された時間（分）
+  actualDuration?: number // 実際に実施した時間（秒）
   description: string
   completed: boolean
   createdAt: Date
