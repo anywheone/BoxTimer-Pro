@@ -42,18 +42,24 @@ export default function ReviewPage() {
         .map(([date, tasks]) => {
           const totalTasks = tasks.length
           const completedTasks = tasks.filter(task => task.completed).length
-          // 1分未満のタスクは1分として計算
-          const totalTime = tasks.reduce((sum, task) => sum + Math.max(task.duration, 1), 0)
+          // actualDurationがあればそれを使用、なければduration（分）を秒に変換
+          const totalTime = tasks.reduce((sum, task) => {
+            const seconds = task.actualDuration ?? (task.duration * 60)
+            return sum + seconds
+          }, 0)
           const completedTime = tasks
             .filter(task => task.completed)
-            .reduce((sum, task) => sum + Math.max(task.duration, 1), 0)
+            .reduce((sum, task) => {
+              const seconds = task.actualDuration ?? (task.duration * 60)
+              return sum + seconds
+            }, 0)
 
           return {
             date,
             totalTasks,
             completedTasks,
-            totalTime: totalTime / 60, // Convert to hours
-            completedTime: completedTime / 60, // Convert to hours
+            totalTime: totalTime / 3600, // Convert to hours (秒→時間)
+            completedTime: completedTime / 3600, // Convert to hours (秒→時間)
             tasks
           }
         })
@@ -245,7 +251,9 @@ export default function ReviewPage() {
                           </div>
                           <div className="text-right">
                             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                              {Math.max(Math.floor(task.duration / 60), 1)}分
+                              {task.actualDuration
+                                ? `${Math.floor(task.actualDuration / 60)}分`
+                                : `${task.duration}分`}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-500">
                               {new Date(task.createdAt).toLocaleTimeString('ja-JP', {

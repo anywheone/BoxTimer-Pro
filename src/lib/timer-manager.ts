@@ -103,12 +103,19 @@ class TimerManager {
         const { timeBoxDB } = await import('./indexeddb')
         const settings = await timeBoxDB.getSettings()
 
-        // Get task name
+        // Get task name and calculate actual duration
         let taskName = 'タスク'
         try {
           const task = await timeBoxDB.getTimeBox(state.activeTimerId)
           if (task) {
             taskName = task.title
+            // Calculate actual duration (初期duration - 残り時間)
+            const actualDuration = (task.duration * 60) - this.getRemainingTime()
+            // Update task with actual duration when completed
+            await timeBoxDB.updateTimeBox({
+              ...task,
+              actualDuration
+            })
           }
         } catch (error) {
           console.error('Failed to get task name:', error)
