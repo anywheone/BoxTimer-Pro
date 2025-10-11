@@ -300,11 +300,17 @@ export default function ReviewPage() {
                               <div className="h-5 w-5 rounded-full border-2 border-gray-400 mr-3 flex-shrink-0" />
                             )}
                             <div className="min-w-0 flex-1">
-                              <h4 className="font-semibold text-gray-800 dark:text-gray-200 truncate">
+                              <h4
+                                className="font-semibold text-gray-800 dark:text-gray-200 truncate"
+                                title={task.title}
+                              >
                                 {task.title}
                               </h4>
                               {task.description && (
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                                <p
+                                  className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2"
+                                  title={task.description}
+                                >
                                   {task.description}
                                 </p>
                               )}
