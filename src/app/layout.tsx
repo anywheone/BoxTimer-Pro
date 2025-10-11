@@ -35,10 +35,10 @@ export default function RootLayout({
           </div>
 
           {/* ヘッダーの下にサイドバーとメインコンテンツ */}
-          <div className="h-screen">
+          <div className="h-screen overflow-hidden">
             <SidebarProvider>
               <AppSidebar />
-              <main className="flex-1 pt-16">
+              <main className="flex-1 pt-16 overflow-y-auto h-screen">
                 {children}
               </main>
             </SidebarProvider>
