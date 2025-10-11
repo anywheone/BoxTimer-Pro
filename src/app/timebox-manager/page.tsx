@@ -640,8 +640,16 @@ function SortableTimeBoxCard({
               </button>
             </div>
           </div>
-          <div className="text-2xl font-bold text-blue-600 mb-2">
-            {timeBox.duration}分
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-2xl font-bold text-blue-600">
+              {timeBox.duration}分
+            </div>
+            {timeBox.scheduledDate && (
+              <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                <CalendarIcon size={14} />
+                <span>{format(new Date(timeBox.scheduledDate), 'M/d', { locale: ja })}</span>
+              </div>
+            )}
           </div>
           {timeBox.description && (
             <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
