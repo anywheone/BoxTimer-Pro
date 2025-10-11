@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Plus, Play, Pause, RotateCcw, Trash2, Edit3, CalendarIcon, RefreshCw, GripVertical, Calendar as CalendarLucide } from 'lucide-react'
+import { Plus, Play, Pause, RotateCcw, Trash2, Edit3, CalendarIcon, RefreshCw, GripVertical, Calendar as CalendarLucide, ArrowUpDown } from 'lucide-react'
 import { timeBoxDB, type TimeBox } from '@/lib/indexeddb'
 import { timerManager } from '@/lib/timer-manager'
 import { Calendar } from '@/components/ui/calendar'
@@ -39,6 +39,7 @@ export default function TimeBoxManager() {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
   const [filterDate, setFilterDate] = useState<Date | undefined>(undefined)
+  const [sortBy, setSortBy] = useState<'order' | 'name'>('order')
   const [timerState, setTimerState] = useState({
     activeTimer: null as string | null,
     timeRemaining: 0,
@@ -374,6 +375,15 @@ export default function TimeBoxManager() {
             </button>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSortBy(sortBy === 'order' ? 'name' : 'order')}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+            >
+              <ArrowUpDown size={18} />
+              <span className="text-sm font-medium">
+                {sortBy === 'order' ? '手動順' : 'タスク名順'}
+              </span>
+            </button>
             <Popover>
               <PopoverTrigger asChild>
                 <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">
@@ -517,6 +527,14 @@ export default function TimeBoxManager() {
                     if (!timeBox.scheduledDate) return false
                     const boxDate = new Date(timeBox.scheduledDate).toDateString()
                     return boxDate === filterDate.toDateString()
+                  })
+                  .sort((a, b) => {
+                    if (sortBy === 'name') {
+                      return a.title.localeCompare(b.title, 'ja')
+                    }
+                    const orderA = a.order ?? Number.MAX_SAFE_INTEGER
+                    const orderB = b.order ?? Number.MAX_SAFE_INTEGER
+                    return orderA - orderB
                   })
                   .map((timeBox) => (
                     <SortableTimeBoxCard
