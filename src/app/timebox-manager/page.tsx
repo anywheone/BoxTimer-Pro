@@ -594,20 +594,20 @@ function SortableTimeBoxCard({
         />
       ) : (
         <>
-          <div className="flex justify-between items-start mb-3">
-            <div className="flex items-center gap-2 flex-1">
+          <div className="flex justify-between items-start mb-3 gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
               <button
                 {...attributes}
                 {...listeners}
-                className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 flex-shrink-0"
               >
                 <GripVertical size={20} />
               </button>
-              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 truncate">
                 {timeBox.title}
               </h3>
             </div>
-            <div className="flex space-x-1">
+            <div className="flex space-x-1 flex-shrink-0">
               <button
                 onClick={() => onEdit(timeBox.id)}
                 className="text-gray-500 hover:text-blue-500 transition-colors"
@@ -626,7 +626,7 @@ function SortableTimeBoxCard({
             {timeBox.duration}分
           </div>
           {timeBox.description && (
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 break-words">
               {timeBox.description}
             </p>
           )}
