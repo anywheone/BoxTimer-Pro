@@ -1,9 +1,13 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Plus, Play, Pause, RotateCcw, Trash2, Edit3, Calendar, RefreshCw } from 'lucide-react'
+import { Plus, Play, Pause, RotateCcw, Trash2, Edit3, CalendarIcon, RefreshCw } from 'lucide-react'
 import { timeBoxDB, type TimeBox } from '@/lib/indexeddb'
 import { timerManager } from '@/lib/timer-manager'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { format } from 'date-fns'
+import { ja } from 'date-fns/locale'
 
 export default function TimeBoxManager() {
   const [timeBoxes, setTimeBoxes] = useState<TimeBox[]>([])
@@ -12,11 +16,12 @@ export default function TimeBoxManager() {
     title: '',
     duration: 25,
     description: '',
-    scheduledDate: new Date().toISOString().split('T')[0]
+    scheduledDate: new Date()
   })
   const [editingTask, setEditingTask] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
+  const [filterDate, setFilterDate] = useState<Date | undefined>(undefined)
   const [timerState, setTimerState] = useState({
     activeTimer: null as string | null,
     timeRemaining: 0,
@@ -101,7 +106,7 @@ export default function TimeBoxManager() {
         description: newTask.description,
         completed: false,
         createdAt: new Date(),
-        scheduledDate: newTask.scheduledDate ? new Date(newTask.scheduledDate) : undefined
+        scheduledDate: newTask.scheduledDate
       }
       try {
         await timeBoxDB.addTimeBox(timeBox)
@@ -110,7 +115,7 @@ export default function TimeBoxManager() {
           title: '',
           duration: 25,
           description: '',
-          scheduledDate: new Date().toISOString().split('T')[0]
+          scheduledDate: new Date()
         })
         setIsAddingTask(false)
       } catch (error) {
@@ -306,21 +311,35 @@ export default function TimeBoxManager() {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <Calendar size={20} className="text-gray-600 dark:text-gray-300" />
-            <input
-              type="date"
-              value={selectedDate || ''}
-              onChange={(e) => setSelectedDate(e.target.value || null)}
-              className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
-            />
-            {selectedDate && (
-              <button
-                onClick={() => setSelectedDate(null)}
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
-              >
-                すべて表示
-              </button>
-            )}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">
+                  <CalendarIcon size={18} />
+                  <span className="text-sm font-medium">
+                    {filterDate ? format(filterDate, 'yyyy年MM月dd日', { locale: ja }) : '日付でフィルター'}
+                  </span>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" align="end">
+                <Calendar
+                  mode="single"
+                  selected={filterDate}
+                  onSelect={setFilterDate}
+                  locale={ja}
+                  className="rounded-md border-0"
+                />
+                {filterDate && (
+                  <div className="p-3 border-t border-gray-200 dark:border-gray-700">
+                    <button
+                      onClick={() => setFilterDate(undefined)}
+                      className="w-full text-sm text-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                    >
+                      フィルターをクリア
+                    </button>
+                  </div>
+                )}
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
@@ -357,12 +376,25 @@ export default function TimeBoxManager() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   予定日
                 </label>
-                <input
-                  type="date"
-                  value={newTask.scheduledDate}
-                  onChange={(e) => setNewTask({ ...newTask, scheduledDate: e.target.value })}
-                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="w-full flex items-center justify-between gap-2 px-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                      <span className="text-sm">
+                        {newTask.scheduledDate ? format(newTask.scheduledDate, 'yyyy年MM月dd日', { locale: ja }) : '日付を選択'}
+                      </span>
+                      <CalendarIcon size={16} className="text-gray-500 dark:text-gray-400" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={newTask.scheduledDate}
+                      onSelect={(date) => setNewTask({ ...newTask, scheduledDate: date || new Date() })}
+                      locale={ja}
+                      className="rounded-md border-0"
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             <div className="mb-4">
@@ -398,10 +430,10 @@ export default function TimeBoxManager() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {timeBoxes
             .filter((timeBox) => {
-              if (!selectedDate) return true
+              if (!filterDate) return true
               if (!timeBox.scheduledDate) return false
-              const boxDate = new Date(timeBox.scheduledDate).toISOString().split('T')[0]
-              return boxDate === selectedDate
+              const boxDate = new Date(timeBox.scheduledDate).toDateString()
+              return boxDate === filterDate.toDateString()
             })
             .map((timeBox) => (
             <div
@@ -519,14 +551,11 @@ function EditTimeBoxForm({
     title: timeBox.title,
     duration: timeBox.duration,
     description: timeBox.description,
-    scheduledDate: timeBox.scheduledDate ? new Date(timeBox.scheduledDate).toISOString().split('T')[0] : ''
+    scheduledDate: timeBox.scheduledDate || new Date()
   })
 
   const handleUpdate = () => {
-    onUpdate(timeBox.id, {
-      ...editData,
-      scheduledDate: editData.scheduledDate ? new Date(editData.scheduledDate) : undefined
-    })
+    onUpdate(timeBox.id, editData)
   }
 
   return (
@@ -549,12 +578,25 @@ function EditTimeBoxForm({
         />
       </div>
       <div className="mb-3">
-        <input
-          type="date"
-          value={editData.scheduledDate}
-          onChange={(e) => setEditData({ ...editData, scheduledDate: e.target.value })}
-          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
-        />
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="w-full flex items-center justify-between gap-2 px-2 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+              <span className="text-sm">
+                {editData.scheduledDate ? format(editData.scheduledDate, 'yyyy年MM月dd日', { locale: ja }) : '日付を選択'}
+              </span>
+              <CalendarIcon size={14} className="text-gray-500 dark:text-gray-400" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" align="start">
+            <Calendar
+              mode="single"
+              selected={editData.scheduledDate}
+              onSelect={(date) => setEditData({ ...editData, scheduledDate: date || new Date() })}
+              locale={ja}
+              className="rounded-md border-0"
+            />
+          </PopoverContent>
+        </Popover>
       </div>
       <div className="mb-3">
         <textarea

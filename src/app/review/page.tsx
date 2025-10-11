@@ -1,8 +1,12 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Calendar, Clock, CheckCircle, Target, TrendingUp, TrendingDown } from 'lucide-react'
+import { CalendarIcon, Clock, CheckCircle, Target, TrendingUp, TrendingDown } from 'lucide-react'
 import { timeBoxDB, type TimeBox } from '@/lib/indexeddb'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { format } from 'date-fns'
+import { ja } from 'date-fns/locale'
 
 interface DailyStats {
   date: string
@@ -131,22 +135,35 @@ export default function ReviewPage() {
           <div className="lg:col-span-1">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-                <Calendar className="mr-2 h-5 w-5" />
+                <CalendarIcon className="mr-2 h-5 w-5" />
                 日付別実績
               </h2>
 
               {/* Date Picker */}
               <div className="mb-4">
-                <input
-                  type="date"
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      const selectedDateStr = new Date(e.target.value).toDateString()
-                      setSelectedDate(selectedDateStr)
-                    }
-                  }}
-                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="w-full flex items-center justify-between gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">
+                      <span className="text-sm font-medium">
+                        {selectedDate ? format(new Date(selectedDate), 'yyyy年MM月dd日', { locale: ja }) : '日付を選択'}
+                      </span>
+                      <CalendarIcon size={16} className="text-gray-500 dark:text-gray-400" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate ? new Date(selectedDate) : undefined}
+                      onSelect={(date) => {
+                        if (date) {
+                          setSelectedDate(date.toDateString())
+                        }
+                      }}
+                      locale={ja}
+                      className="rounded-md border-0"
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
 
               {dailyStats.length === 0 ? (
