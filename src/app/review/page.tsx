@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from 'react'
-import { CalendarIcon, Clock, CheckCircle, Target, TrendingUp, TrendingDown } from 'lucide-react'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { CalendarIcon, Clock, CheckCircle, Target, TrendingUp, TrendingDown, MessageSquare } from 'lucide-react'
 import { timeBoxDB, type TimeBox } from '@/lib/indexeddb'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -21,6 +21,7 @@ export default function ReviewPage() {
   const [dailyStats, setDailyStats] = useState<DailyStats[]>([])
   const [selectedDate, setSelectedDate] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
+  const saveTimerRef = useRef<{ [key: string]: NodeJS.Timeout }>({})
 
   useEffect(() => {
     loadDailyStats()
@@ -103,6 +104,35 @@ export default function ReviewPage() {
     if (total === 0) return 0
     return Math.round((completed / total) * 100)
   }
+
+  const handleCommentChange = useCallback((taskId: string, comment: string) => {
+    // Update local state immediately
+    setDailyStats(prevStats =>
+      prevStats.map(stat => ({
+        ...stat,
+        tasks: stat.tasks.map(t =>
+          t.id === taskId ? { ...t, comment } : t
+        )
+      }))
+    )
+
+    // Clear existing timer for this task
+    if (saveTimerRef.current[taskId]) {
+      clearTimeout(saveTimerRef.current[taskId])
+    }
+
+    // Debounce: Save to DB after 500ms of no typing
+    saveTimerRef.current[taskId] = setTimeout(async () => {
+      try {
+        const task = await timeBoxDB.getTimeBox(taskId)
+        if (task) {
+          await timeBoxDB.updateTimeBox({ ...task, comment })
+        }
+      } catch (error) {
+        console.error('Failed to update comment:', error)
+      }
+    }, 500)
+  }, [])
 
   const selectedDayStats = dailyStats.find(stat => stat.date === selectedDate)
 
@@ -262,7 +292,7 @@ export default function ReviewPage() {
                             : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
                         }`}
                       >
-                        <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center justify-between gap-2 mb-3">
                           <div className="flex items-center min-w-0 flex-1">
                             {task.completed ? (
                               <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mr-3 flex-shrink-0" />
@@ -293,6 +323,27 @@ export default function ReviewPage() {
                               })}
                             </p>
                           </div>
+                        </div>
+
+                        {/* Comment Section */}
+                        <div className="mt-3 border-t border-gray-200 dark:border-gray-600 pt-3">
+                          <div className="flex items-center gap-2 mb-2">
+                            <MessageSquare className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              振り返りメモ
+                            </label>
+                          </div>
+                          <textarea
+                            value={task.comment || ''}
+                            onChange={(e) => handleCommentChange(task.id, e.target.value)}
+                            placeholder="時間がかかったポイント、学んだこと、改善点などをメモ..."
+                            className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg
+                                     bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200
+                                     placeholder-gray-400 dark:placeholder-gray-500
+                                     focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent
+                                     resize-none transition-colors"
+                            rows={3}
+                          />
                         </div>
                       </div>
                     ))}
