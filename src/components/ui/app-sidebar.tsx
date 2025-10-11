@@ -50,14 +50,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="relative">
       <SidebarContent>
         <SidebarGroup>
-          <div className="flex items-center justify-between px-2">
-            <SidebarGroupLabel className="px-0">説明</SidebarGroupLabel>
-            <SidebarTrigger className="h-6 w-6 group-data-[collapsible=icon]:hidden" />
-          </div>
-          {/* Collapsed state trigger */}
-          <div className="hidden group-data-[collapsible=icon]:flex justify-center p-2">
-            <SidebarTrigger className="h-8 w-8" />
-          </div>
+          <SidebarGroupLabel className="px-2">説明</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {explanationItems.map((item) => (
