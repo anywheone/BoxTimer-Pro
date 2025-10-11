@@ -626,7 +626,7 @@ function SortableTimeBoxCard({
             {timeBox.duration}分
           </div>
           {timeBox.description && (
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 break-words">
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
               {timeBox.description}
             </p>
           )}
