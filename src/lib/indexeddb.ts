@@ -16,6 +16,7 @@ interface Settings {
   darkMode: boolean
   soundEnabled: boolean
   soundVolume: number
+  soundType: 'bell' | 'chime' | 'harp' // アラーム音の種類
   notificationEnabled: boolean
   defaultDuration: number // デフォルトのタイムボックス時間（分）
   updatedAt: Date
@@ -233,6 +234,7 @@ class TimeBoxDB {
             darkMode: false,
             soundEnabled: true,
             soundVolume: 0.5,
+            soundType: 'chime',
             notificationEnabled: true,
             defaultDuration: 25,
             updatedAt: new Date()

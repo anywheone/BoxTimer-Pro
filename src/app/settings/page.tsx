@@ -5,6 +5,7 @@ import { Moon, Sun, Volume2, VolumeX, Bell, BellOff, Save, RotateCcw, Clock } fr
 import { timeBoxDB, type Settings } from '@/lib/indexeddb'
 import { themeManager } from '@/lib/theme-manager'
 import NotificationTest from '@/components/NotificationTest'
+import { playSound, soundTypes } from '@/lib/sounds'
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<Settings>({
@@ -12,6 +13,7 @@ export default function SettingsPage() {
     darkMode: false,
     soundEnabled: true,
     soundVolume: 0.5,
+    soundType: 'chime',
     notificationEnabled: true,
     defaultDuration: 25,
     updatedAt: new Date()
@@ -73,51 +75,13 @@ export default function SettingsPage() {
       darkMode: false,
       soundEnabled: true,
       soundVolume: 0.5,
+      soundType: 'chime',
       notificationEnabled: true,
       defaultDuration: 25,
       updatedAt: new Date()
     }
     setSettings(defaultSettings)
     themeManager.applyTheme(false)
-  }
-
-  const testSound = () => {
-    if (settings.soundEnabled) {
-      try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-
-        // Same pleasant melody as the timer completion sound
-        const melody = [523.25, 659.25, 783.99, 1046.50] // C5, E5, G5, C6
-        const noteDuration = 0.3
-
-        melody.forEach((frequency, index) => {
-          const oscillator = audioContext.createOscillator()
-          const gainNode = audioContext.createGain()
-
-          oscillator.connect(gainNode)
-          gainNode.connect(audioContext.destination)
-
-          // Use sine wave for smoother sound
-          oscillator.type = 'sine'
-          oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime)
-
-          // Create fade in/out envelope for smoother sound
-          const startTime = audioContext.currentTime + (index * noteDuration)
-          const endTime = startTime + noteDuration
-
-          gainNode.gain.setValueAtTime(0, startTime)
-          gainNode.gain.linearRampToValueAtTime(settings.soundVolume * 0.7, startTime + 0.05)
-          gainNode.gain.setValueAtTime(settings.soundVolume * 0.7, endTime - 0.1)
-          gainNode.gain.linearRampToValueAtTime(0, endTime)
-
-          oscillator.start(startTime)
-          oscillator.stop(endTime)
-        })
-
-      } catch (error) {
-        console.error('Failed to play test sound:', error)
-      }
-    }
   }
 
   if (isLoading) {
@@ -217,32 +181,56 @@ export default function SettingsPage() {
               </div>
 
               {settings.soundEnabled && (
-                <div className="mt-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <>
+                  <div className="mt-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        音の種類
+                      </label>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {Object.entries(soundTypes).map(([key, sound]) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            updateSetting('soundType', key as any)
+                            // Play preview sound
+                            setTimeout(() => playSound(key as any, settings.soundVolume), 100)
+                          }}
+                          className={`p-3 rounded-lg border-2 transition-all ${
+                            settings.soundType === key
+                              ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                              : 'border-gray-300 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-700'
+                          }`}
+                        >
+                          <div className="text-sm font-semibold">{sound.name}</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                            {sound.description}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
                       音量
                     </label>
-                    <button
-                      onClick={testSound}
-                      className="text-sm bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md transition-colors"
-                    >
-                      テスト
-                    </button>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={settings.soundVolume}
+                      onChange={(e) => updateSetting('soundVolume', parseFloat(e.target.value))}
+                      className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <span>静か</span>
+                      <span>大きい</span>
+                    </div>
                   </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={settings.soundVolume}
-                    onChange={(e) => updateSetting('soundVolume', parseFloat(e.target.value))}
-                    className="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    <span>静か</span>
-                    <span>大きい</span>
-                  </div>
-                </div>
+                </>
               )}
             </div>
 
@@ -361,18 +349,25 @@ export default function SettingsPage() {
                 </button>
               </div>
 
-              {/* Permission Status */}
-              <div className="mt-3 text-xs text-gray-600 dark:text-gray-400">
-                許可状態: <span className={`font-mono px-2 py-1 rounded ${
-                  notificationPermission === 'granted'
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
-                    : notificationPermission === 'denied'
-                    ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-                    : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
-                }`}>
-                  {notificationPermission === 'granted' ? '許可済み' :
-                   notificationPermission === 'denied' ? '拒否' : '未設定'}
-                </span>
+              {/* Permission Status and Test Button */}
+              <div className="mt-3 flex items-center justify-between">
+                <div className="text-xs text-gray-600 dark:text-gray-400">
+                  許可状態: <span className={`font-mono px-2 py-1 rounded ${
+                    notificationPermission === 'granted'
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                      : notificationPermission === 'denied'
+                      ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
+                      : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
+                  }`}>
+                    {notificationPermission === 'granted' ? '許可済み' :
+                     notificationPermission === 'denied' ? '拒否' : '未設定'}
+                  </span>
+                </div>
+
+                {/* Notification Test Button */}
+                {settings.notificationEnabled && notificationPermission === 'granted' && (
+                  <NotificationTest />
+                )}
               </div>
 
               {notificationPermission === 'denied' && (
@@ -383,9 +378,6 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-
-        {/* Notification Test */}
-        <NotificationTest />
 
         {/* Action Buttons */}
         <div className="flex justify-center space-x-4">
