@@ -621,7 +621,10 @@ function SortableTimeBoxCard({
               >
                 <GripVertical size={20} />
               </button>
-              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 truncate">
+              <h3
+                className="text-lg font-bold text-gray-800 dark:text-gray-200 truncate"
+                title={timeBox.title}
+              >
                 {timeBox.title}
               </h3>
             </div>
@@ -652,7 +655,10 @@ function SortableTimeBoxCard({
             )}
           </div>
           {timeBox.description && (
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
+            <p
+              className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2"
+              title={timeBox.description}
+            >
               {timeBox.description}
             </p>
           )}
