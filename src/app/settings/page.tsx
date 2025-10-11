@@ -86,7 +86,7 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-3 sm:p-6 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">設定を読み込み中...</p>
@@ -96,22 +96,22 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-3 sm:p-6">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+        <div className="text-center mb-4 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-2 sm:mb-4">
             設定
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-lg">
             アプリの動作をカスタマイズできます
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-6">
-          <div className="space-y-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-8 mb-4 sm:mb-6">
+          <div className="space-y-4 sm:space-y-8">
             {/* Dark Mode Setting */}
-            <div className="flex items-center justify-between p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div className="flex items-center space-x-4">
+            <div className="flex items-center justify-between p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="flex items-center space-x-3 sm:space-x-4">
                 <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
                   {settings.darkMode ? (
                     <Moon className="h-6 w-6 text-blue-600 dark:text-blue-400" />

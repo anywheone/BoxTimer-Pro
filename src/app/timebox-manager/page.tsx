@@ -310,59 +310,61 @@ export default function TimeBoxManager() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-3 sm:p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+        <div className="text-center mb-4 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-2 sm:mb-4">
             タイムボックス管理
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg">
+          <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-lg">
             タスクを時間で区切って効率的に作業しましょう
           </p>
         </div>
 
         {/* Active Timer Display */}
         {timerState.activeTimer && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 text-center">
-            <div className="mb-4">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-8 text-center">
+            <div className="mb-3 sm:mb-4">
+              <h2 className="text-lg sm:text-2xl font-bold text-gray-800 dark:text-gray-200 mb-1 sm:mb-2">
                 実行中のタイムボックス
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-300">
+              <p className="text-base sm:text-xl text-gray-600 dark:text-gray-300">
                 {timeBoxes.find(box => box.id === timerState.activeTimer)?.title}
               </p>
             </div>
-            <div className="text-6xl font-mono font-bold text-blue-600 mb-6">
+            <div className="text-4xl sm:text-6xl font-mono font-bold text-blue-600 mb-4 sm:mb-6">
               {formatTime(timerState.timeRemaining)}
             </div>
-            <div className="flex justify-center space-x-4">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
               {timerState.isRunning ? (
                 <button
                   onClick={pauseTimer}
-                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center space-x-2 transition-colors text-sm sm:text-base"
                 >
-                  <Pause size={20} />
-                  <span>一時停止</span>
+                  <Pause size={18} className="sm:w-5 sm:h-5" />
+                  <span className="hidden sm:inline">一時停止</span>
+                  <span className="sm:hidden">停止</span>
                 </button>
               ) : (
                 <button
                   onClick={resumeTimer}
-                  className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors"
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center space-x-2 transition-colors text-sm sm:text-base"
                 >
-                  <Play size={20} />
+                  <Play size={18} className="sm:w-5 sm:h-5" />
                   <span>再開</span>
                 </button>
               )}
               <button
                 onClick={resetTimer}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center space-x-2 transition-colors text-sm sm:text-base"
               >
-                <RotateCcw size={20} />
-                <span>リセット</span>
+                <RotateCcw size={18} className="sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline">リセット</span>
+                <span className="sm:hidden">リセット</span>
               </button>
               <button
                 onClick={() => completeTimeBox(timerState.activeTimer!)}
-                className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg transition-colors"
+                className="bg-purple-500 hover:bg-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg transition-colors text-sm sm:text-base"
               >
                 完了
               </button>
@@ -371,32 +373,37 @@ export default function TimeBoxManager() {
         )}
 
         {/* Date Filter and Add Button */}
-        <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsAddingTask(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors"
-            >
-              <Plus size={20} />
-              <span>新しいタイムボックスを追加</span>
-            </button>
-          </div>
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row gap-2 sm:gap-4 items-stretch sm:items-center justify-between">
+          <button
+            onClick={() => setIsAddingTask(true)}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm sm:text-base"
+          >
+            <Plus size={18} className="sm:w-5 sm:h-5" />
+            <span className="hidden sm:inline">新しいタイムボックスを追加</span>
+            <span className="sm:hidden">タイムボックスを追加</span>
+          </button>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setSortBy(sortBy === 'order' ? 'name' : 'order')}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm"
             >
-              <ArrowUpDown size={18} />
-              <span className="text-sm font-medium">
+              <ArrowUpDown size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="font-medium hidden sm:inline">
                 {sortBy === 'order' ? '手動順' : 'タスク名順'}
+              </span>
+              <span className="font-medium sm:hidden">
+                {sortBy === 'order' ? '手動' : '名前'}
               </span>
             </button>
             <Popover>
               <PopoverTrigger asChild>
-                <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">
-                  <CalendarIcon size={18} />
-                  <span className="text-sm font-medium">
+                <button className="flex items-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">
+                  <CalendarIcon size={16} className="sm:w-[18px] sm:h-[18px]" />
+                  <span className="text-sm font-medium hidden sm:inline">
                     {filterDate ? format(filterDate, 'yyyy年MM月dd日', { locale: ja }) : '日付でフィルター'}
+                  </span>
+                  <span className="text-sm font-medium sm:hidden">
+                    {filterDate ? format(filterDate, 'M/d', { locale: ja }) : '日付'}
                   </span>
                 </button>
               </PopoverTrigger>
@@ -425,9 +432,9 @@ export default function TimeBoxManager() {
 
         {/* Add Task Form */}
         {isAddingTask && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
-            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">新しいタイムボックス</h3>
-            <div className="grid md:grid-cols-3 gap-4 mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200 mb-3 sm:mb-4">新しいタイムボックス</h3>
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-3 sm:mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   タスク名
@@ -477,28 +484,28 @@ export default function TimeBoxManager() {
                 </Popover>
               </div>
             </div>
-            <div className="mb-4">
+            <div className="mb-3 sm:mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 説明（任意）
               </label>
               <textarea
                 value={newTask.description}
                 onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200 text-sm sm:text-base"
                 rows={3}
                 placeholder="タスクの詳細..."
               />
             </div>
-            <div className="flex space-x-3">
+            <div className="flex gap-2 sm:gap-3">
               <button
                 onClick={addTimeBox}
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors"
+                className="bg-green-500 hover:bg-green-600 text-white px-4 sm:px-6 py-2 rounded-lg transition-colors text-sm sm:text-base"
               >
                 追加
               </button>
               <button
                 onClick={() => setIsAddingTask(false)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 sm:px-6 py-2 rounded-lg transition-colors text-sm sm:text-base"
               >
                 キャンセル
               </button>
@@ -527,7 +534,7 @@ export default function TimeBoxManager() {
               items={timeBoxes.map((box) => box.id)}
               strategy={rectSortingStrategy}
             >
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {timeBoxes
                   .filter((timeBox) => {
                     if (!filterDate) return true
