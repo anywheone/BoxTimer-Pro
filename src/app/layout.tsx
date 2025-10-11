@@ -29,20 +29,20 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ThemeProvider>
-          {/* 固定ヘッダー */}
-          <div className="fixed top-0 left-0 right-0 h-16 flex items-center bg-sidebar border-b border-sidebar-border dark:bg-gray-800 dark:border-gray-700 z-50 px-4">
-            <Header />
-          </div>
+          <SidebarProvider>
+            {/* 固定ヘッダー */}
+            <div className="fixed top-0 left-0 right-0 h-16 flex items-center bg-sidebar border-b border-sidebar-border dark:bg-gray-800 dark:border-gray-700 z-50 px-4">
+              <Header />
+            </div>
 
-          {/* ヘッダーの下にサイドバーとメインコンテンツ */}
-          <div className="h-screen overflow-hidden">
-            <SidebarProvider defaultOpen={false}>
+            {/* ヘッダーの下にサイドバーとメインコンテンツ */}
+            <div className="h-screen overflow-hidden">
               <AppSidebar />
               <main className="flex-1 pt-16 overflow-y-auto h-screen">
                 {children}
               </main>
-            </SidebarProvider>
-          </div>
+            </div>
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
