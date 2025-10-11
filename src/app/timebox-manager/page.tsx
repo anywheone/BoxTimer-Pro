@@ -29,6 +29,7 @@ import { CSS } from '@dnd-kit/utilities'
 export default function TimeBoxManager() {
   const [timeBoxes, setTimeBoxes] = useState<TimeBox[]>([])
   const [isAddingTask, setIsAddingTask] = useState(false)
+  const [defaultDuration, setDefaultDuration] = useState(25)
   const [newTask, setNewTask] = useState({
     title: '',
     duration: 25,
@@ -54,10 +55,11 @@ export default function TimeBoxManager() {
     })
   )
 
-  // Load timeboxes from IndexedDB on mount
+  // Load timeboxes and settings from IndexedDB on mount
   useEffect(() => {
-    const loadTimeBoxes = async () => {
+    const loadData = async () => {
       try {
+        // Load timeboxes
         const savedTimeBoxes = await timeBoxDB.getAllTimeBoxes()
         // Sort by order field
         const sortedTimeBoxes = savedTimeBoxes.sort((a, b) => {
@@ -66,13 +68,18 @@ export default function TimeBoxManager() {
           return orderA - orderB
         })
         setTimeBoxes(sortedTimeBoxes)
+
+        // Load settings for default duration
+        const settings = await timeBoxDB.getSettings()
+        setDefaultDuration(settings.defaultDuration)
+        setNewTask(prev => ({ ...prev, duration: settings.defaultDuration }))
       } catch (error) {
-        console.error('Failed to load timeboxes:', error)
+        console.error('Failed to load data:', error)
       } finally {
         setIsLoading(false)
       }
     }
-    loadTimeBoxes()
+    loadData()
   }, [])
 
   // Initialize timer state and listen for changes
@@ -147,7 +154,7 @@ export default function TimeBoxManager() {
         setTimeBoxes([...timeBoxes, timeBox])
         setNewTask({
           title: '',
-          duration: 25,
+          duration: defaultDuration,
           description: '',
           scheduledDate: new Date()
         })

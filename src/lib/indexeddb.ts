@@ -17,6 +17,7 @@ interface Settings {
   soundEnabled: boolean
   soundVolume: number
   notificationEnabled: boolean
+  defaultDuration: number // デフォルトのタイムボックス時間（分）
   updatedAt: Date
 }
 
@@ -233,6 +234,7 @@ class TimeBoxDB {
             soundEnabled: true,
             soundVolume: 0.5,
             notificationEnabled: true,
+            defaultDuration: 25,
             updatedAt: new Date()
           }
           resolve(defaultSettings)

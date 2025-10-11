@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Moon, Sun, Volume2, VolumeX, Bell, BellOff, Save, RotateCcw } from 'lucide-react'
+import { Moon, Sun, Volume2, VolumeX, Bell, BellOff, Save, RotateCcw, Clock } from 'lucide-react'
 import { timeBoxDB, type Settings } from '@/lib/indexeddb'
 import { themeManager } from '@/lib/theme-manager'
 import NotificationTest from '@/components/NotificationTest'
@@ -13,6 +13,7 @@ export default function SettingsPage() {
     soundEnabled: true,
     soundVolume: 0.5,
     notificationEnabled: true,
+    defaultDuration: 25,
     updatedAt: new Date()
   })
   const [isLoading, setIsLoading] = useState(true)
@@ -73,6 +74,7 @@ export default function SettingsPage() {
       soundEnabled: true,
       soundVolume: 0.5,
       notificationEnabled: true,
+      defaultDuration: 25,
       updatedAt: new Date()
     }
     setSettings(defaultSettings)
@@ -244,6 +246,57 @@ export default function SettingsPage() {
               )}
             </div>
 
+            {/* Default Duration Setting */}
+            <div className="p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full">
+                    <Clock className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                      デフォルトのタイムボックス時間
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      新規タスク作成時の初期値（分）
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4">
+                <input
+                  type="number"
+                  min="1"
+                  max="180"
+                  value={settings.defaultDuration || ''}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    if (value === '') {
+                      // Allow empty value during editing (set to undefined-like state)
+                      updateSetting('defaultDuration', '' as any)
+                    } else {
+                      const numValue = parseInt(value)
+                      if (!isNaN(numValue)) {
+                        updateSetting('defaultDuration', numValue)
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // On blur, ensure value is valid (1-180) or reset to 25
+                    const currentValue = settings.defaultDuration
+                    if (!currentValue || currentValue < 1 || currentValue > 180) {
+                      updateSetting('defaultDuration', 25)
+                    }
+                  }}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-800 dark:text-gray-200"
+                />
+                <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <span>1分〜180分</span>
+                  <span>現在: {settings.defaultDuration || '未設定'}分</span>
+                </div>
+              </div>
+            </div>
+
             {/* Notification Setting */}
             <div className="p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div className="flex items-center justify-between mb-3">
@@ -355,8 +408,9 @@ export default function SettingsPage() {
         </div>
 
         {showSaved && (
-          <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in">
-            設定が保存されました！
+          <div className="fixed top-20 right-4 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 z-50 animate-in slide-in-from-top-5 fade-in duration-300">
+            <Save size={20} />
+            <span className="font-semibold">設定が保存されました！</span>
           </div>
         )}
       </div>

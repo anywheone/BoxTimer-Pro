@@ -133,7 +133,7 @@ class TimerManager {
             body: `「${taskName}」の時間が終了しました。お疲れ様でした！`,
             icon: '/BoxTimer_Logo.png',
             requireInteraction: true,
-            tag: 'timebox-complete'
+            tag: `timebox-complete-${Date.now()}`
           })
         } else {
           console.log('Notification not shown:', {
@@ -163,7 +163,7 @@ class TimerManager {
             body: `「${fallbackTaskName}」の時間が終了しました。お疲れ様でした！`,
             icon: '/BoxTimer_Logo.png',
             requireInteraction: true,
-            tag: 'timebox-complete'
+            tag: `timebox-complete-${Date.now()}`
           })
         }
       }
