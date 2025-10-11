@@ -145,4 +145,9 @@
   .dark * {
     scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
   }
+
+  /* サイドバーのスペーサーを非表示にして余白を削除 */
+  .group.peer[data-variant="sidebar"] > div:first-child {
+    display: none;
+  }
 }
