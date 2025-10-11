@@ -6,6 +6,7 @@ interface TimeBox {
   description: string
   completed: boolean
   createdAt: Date
+  scheduledDate?: Date // 予定日
 }
 
 interface Settings {
@@ -19,7 +20,7 @@ interface Settings {
 
 class TimeBoxDB {
   private dbName = 'TimeBoxProDB'
-  private version = 2
+  private version = 3
   private db: IDBDatabase | null = null
 
   async init(): Promise<void> {
@@ -37,12 +38,21 @@ class TimeBoxDB {
 
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result
+        const oldVersion = event.oldVersion
 
         // Create timeboxes object store
         if (!db.objectStoreNames.contains('timeboxes')) {
           const timeboxStore = db.createObjectStore('timeboxes', { keyPath: 'id' })
           timeboxStore.createIndex('createdAt', 'createdAt', { unique: false })
           timeboxStore.createIndex('completed', 'completed', { unique: false })
+          timeboxStore.createIndex('scheduledDate', 'scheduledDate', { unique: false })
+        } else if (oldVersion < 3) {
+          // Add scheduledDate index to existing store
+          const transaction = (event.target as IDBOpenDBRequest).transaction
+          const timeboxStore = transaction!.objectStore('timeboxes')
+          if (!timeboxStore.indexNames.contains('scheduledDate')) {
+            timeboxStore.createIndex('scheduledDate', 'scheduledDate', { unique: false })
+          }
         }
 
         // Create settings object store
@@ -87,7 +97,8 @@ class TimeBoxDB {
       request.onsuccess = () => {
         const timeboxes = request.result.map((timebox: any) => ({
           ...timebox,
-          createdAt: new Date(timebox.createdAt)
+          createdAt: new Date(timebox.createdAt),
+          scheduledDate: timebox.scheduledDate ? new Date(timebox.scheduledDate) : undefined
         }))
         resolve(timeboxes)
       }
@@ -153,7 +164,8 @@ class TimeBoxDB {
         if (result) {
           resolve({
             ...result,
-            createdAt: new Date(result.createdAt)
+            createdAt: new Date(result.createdAt),
+            scheduledDate: result.scheduledDate ? new Date(result.scheduledDate) : undefined
           })
         } else {
           resolve(null)

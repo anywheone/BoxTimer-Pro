@@ -8,9 +8,15 @@ import { timerManager } from '@/lib/timer-manager'
 export default function TimeBoxManager() {
   const [timeBoxes, setTimeBoxes] = useState<TimeBox[]>([])
   const [isAddingTask, setIsAddingTask] = useState(false)
-  const [newTask, setNewTask] = useState({ title: '', duration: 25, description: '' })
+  const [newTask, setNewTask] = useState({
+    title: '',
+    duration: 25,
+    description: '',
+    scheduledDate: new Date().toISOString().split('T')[0]
+  })
   const [editingTask, setEditingTask] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [timerState, setTimerState] = useState({
     activeTimer: null as string | null,
     timeRemaining: 0,
@@ -94,12 +100,18 @@ export default function TimeBoxManager() {
         duration: newTask.duration,
         description: newTask.description,
         completed: false,
-        createdAt: new Date()
+        createdAt: new Date(),
+        scheduledDate: newTask.scheduledDate ? new Date(newTask.scheduledDate) : undefined
       }
       try {
         await timeBoxDB.addTimeBox(timeBox)
         setTimeBoxes([...timeBoxes, timeBox])
-        setNewTask({ title: '', duration: 25, description: '' })
+        setNewTask({
+          title: '',
+          duration: 25,
+          description: '',
+          scheduledDate: new Date().toISOString().split('T')[0]
+        })
         setIsAddingTask(false)
       } catch (error) {
         console.error('Failed to add timebox:', error)
@@ -282,22 +294,41 @@ export default function TimeBoxManager() {
           </div>
         )}
 
-        {/* Add New Task Button */}
-        <div className="mb-6">
-          <button
-            onClick={() => setIsAddingTask(true)}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors"
-          >
-            <Plus size={20} />
-            <span>新しいタイムボックスを追加</span>
-          </button>
+        {/* Date Filter and Add Button */}
+        <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsAddingTask(true)}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors"
+            >
+              <Plus size={20} />
+              <span>新しいタイムボックスを追加</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar size={20} className="text-gray-600 dark:text-gray-300" />
+            <input
+              type="date"
+              value={selectedDate || ''}
+              onChange={(e) => setSelectedDate(e.target.value || null)}
+              className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
+            />
+            {selectedDate && (
+              <button
+                onClick={() => setSelectedDate(null)}
+                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+              >
+                すべて表示
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Add Task Form */}
         {isAddingTask && (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-6">
             <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">新しいタイムボックス</h3>
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div className="grid md:grid-cols-3 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   タスク名
@@ -320,6 +351,17 @@ export default function TimeBoxManager() {
                   onChange={(e) => setNewTask({ ...newTask, duration: parseInt(e.target.value) })}
                   className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
                   min="1"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  予定日
+                </label>
+                <input
+                  type="date"
+                  value={newTask.scheduledDate}
+                  onChange={(e) => setNewTask({ ...newTask, scheduledDate: e.target.value })}
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
                 />
               </div>
             </div>
@@ -354,7 +396,14 @@ export default function TimeBoxManager() {
 
         {/* TimeBox List */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {timeBoxes.map((timeBox) => (
+          {timeBoxes
+            .filter((timeBox) => {
+              if (!selectedDate) return true
+              if (!timeBox.scheduledDate) return false
+              const boxDate = new Date(timeBox.scheduledDate).toISOString().split('T')[0]
+              return boxDate === selectedDate
+            })
+            .map((timeBox) => (
             <div
               key={timeBox.id}
               className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-all ${
@@ -469,11 +518,15 @@ function EditTimeBoxForm({
   const [editData, setEditData] = useState({
     title: timeBox.title,
     duration: timeBox.duration,
-    description: timeBox.description
+    description: timeBox.description,
+    scheduledDate: timeBox.scheduledDate ? new Date(timeBox.scheduledDate).toISOString().split('T')[0] : ''
   })
 
   const handleUpdate = () => {
-    onUpdate(timeBox.id, editData)
+    onUpdate(timeBox.id, {
+      ...editData,
+      scheduledDate: editData.scheduledDate ? new Date(editData.scheduledDate) : undefined
+    })
   }
 
   return (
@@ -493,6 +546,14 @@ function EditTimeBoxForm({
           onChange={(e) => setEditData({ ...editData, duration: parseInt(e.target.value) })}
           className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
           min="1"
+        />
+      </div>
+      <div className="mb-3">
+        <input
+          type="date"
+          value={editData.scheduledDate}
+          onChange={(e) => setEditData({ ...editData, scheduledDate: e.target.value })}
+          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
         />
       </div>
       <div className="mb-3">

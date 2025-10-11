@@ -135,6 +135,20 @@ export default function ReviewPage() {
                 日付別実績
               </h2>
 
+              {/* Date Picker */}
+              <div className="mb-4">
+                <input
+                  type="date"
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      const selectedDateStr = new Date(e.target.value).toDateString()
+                      setSelectedDate(selectedDateStr)
+                    }
+                  }}
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200"
+                />
+              </div>
+
               {dailyStats.length === 0 ? (
                 <p className="text-gray-500 dark:text-gray-400 text-center py-8">
                   まだタイムボックスの実績がありません
