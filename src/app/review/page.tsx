@@ -262,25 +262,25 @@ export default function ReviewPage() {
                             : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
                         }`}
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center min-w-0 flex-1">
                             {task.completed ? (
-                              <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mr-3" />
+                              <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mr-3 flex-shrink-0" />
                             ) : (
-                              <div className="h-5 w-5 rounded-full border-2 border-gray-400 mr-3" />
+                              <div className="h-5 w-5 rounded-full border-2 border-gray-400 mr-3 flex-shrink-0" />
                             )}
-                            <div>
-                              <h4 className="font-semibold text-gray-800 dark:text-gray-200">
+                            <div className="min-w-0 flex-1">
+                              <h4 className="font-semibold text-gray-800 dark:text-gray-200 truncate">
                                 {task.title}
                               </h4>
                               {task.description && (
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
                                   {task.description}
                                 </p>
                               )}
                             </div>
                           </div>
-                          <div className="text-right">
+                          <div className="text-right flex-shrink-0">
                             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
                               {task.actualDuration
                                 ? `${Math.floor(task.actualDuration / 60)}分`
