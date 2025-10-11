@@ -138,7 +138,7 @@ export default function ReviewPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-3 sm:p-6 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">データを読み込み中...</p>
@@ -148,24 +148,24 @@ export default function ReviewPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-3 sm:p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+        <div className="text-center mb-4 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-2 sm:mb-4">
             📊 タイムボックス振り返り
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-lg">
             日ごとの実績を確認して、生産性を向上させましょう
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Left: Daily List */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-                <CalendarIcon className="mr-2 h-5 w-5" />
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200 mb-3 sm:mb-4 flex items-center">
+                <CalendarIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 日付別実績
               </h2>
 
@@ -238,8 +238,8 @@ export default function ReviewPage() {
             {selectedDayStats ? (
               <div className="space-y-6">
                 {/* Summary Cards */}
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-gray-600 dark:text-gray-400">完了率</p>
@@ -251,19 +251,19 @@ export default function ReviewPage() {
                     </div>
                   </div>
 
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-gray-600 dark:text-gray-400">完了時間</p>
-                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">完了時間</p>
+                        <p className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">
                           {selectedDayStats.completedTime.toFixed(1)}h
                         </p>
                       </div>
-                      <Clock className="h-8 w-8 text-green-600 dark:text-green-400" />
+                      <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-green-600 dark:text-green-400" />
                     </div>
                   </div>
 
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-gray-600 dark:text-gray-400">完了タスク</p>
@@ -277,8 +277,8 @@ export default function ReviewPage() {
                 </div>
 
                 {/* Task List */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-gray-200 mb-3 sm:mb-4">
                     {formatDate(selectedDate)}のタスク詳細
                   </h3>
 

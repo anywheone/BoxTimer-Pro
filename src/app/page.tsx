@@ -2,24 +2,24 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       {/* Hero Section */}
-      <div className="container mx-auto px-6 py-16">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold text-gray-800 dark:text-gray-200 mb-6">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-16">
+        <div className="text-center mb-8 sm:mb-16">
+          <h1 className="text-3xl sm:text-5xl font-bold text-gray-800 dark:text-gray-200 mb-4 sm:mb-6">
             タイムボックス法
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-base sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto px-4">
             時間を区切って集中力を最大化する、効果的な時間管理手法
           </p>
         </div>
 
         {/* What is Timeboxing */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-12">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-8 mb-8 sm:mb-12">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 items-center">
             <div>
-              <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-3 sm:mb-4">
                 タイムボックス法とは？
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-4">
+              <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg leading-relaxed mb-3 sm:mb-4">
                 タイムボックス法は、あらかじめ決めた時間枠（タイムボックス）の中で作業を行う時間管理手法です。
               </p>
               <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
@@ -45,11 +45,11 @@ export default function Home() {
         </div>
 
         {/* How it works */}
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-8">
+        <div className="mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6 sm:mb-8">
             どのように機能するのか
           </h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 text-center">
               <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">⏰</span>
@@ -87,11 +87,11 @@ export default function Home() {
         </div>
 
         {/* Benefits */}
-        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-8 text-white mb-12">
-          <h2 className="text-3xl font-bold text-center mb-8">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-6 sm:p-8 text-white mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-8">
             タイムボックス法の効果
           </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <div className="text-center">
               <div className="text-4xl mb-3">⚡</div>
               <h3 className="text-lg font-bold mb-2">集中力向上</h3>
@@ -124,11 +124,11 @@ export default function Home() {
         </div>
 
         {/* Visual Timeline */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
-          <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-gray-800 dark:text-gray-200 mb-6 sm:mb-8">
             タイムボックスの流れ
           </h2>
-          <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8">
+          <div className="flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-4 lg:space-x-8">
             <div className="flex flex-col items-center">
               <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl mb-2">
                 25分
