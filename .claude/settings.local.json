@@ -3,7 +3,17 @@
     "allow": [
       "Bash(npm run dev:*)",
       "Bash(curl:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\n実施時間の正確な記録とタブへのカウントダウン表示機能を追加\n\n- TimeBoxインターフェースにactualDuration（実施時間）フィールドを追加\n- タイマー完了時に実際の実施時間を計算して保存\n- 振り返りページで実施時間を正確に表示（actualDurationを優先使用）\n- タイマー実行中にブラウザタブへカウントダウンを表示\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npm install:*)",
+      "Bash(cat:*)",
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

@@ -7,6 +7,7 @@ interface TimeBox {
   completed: boolean
   createdAt: Date
   scheduledDate?: Date // 予定日
+  order?: number // 表示順序
 }
 
 interface Settings {

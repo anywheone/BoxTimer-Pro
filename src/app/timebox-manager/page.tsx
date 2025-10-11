@@ -1,13 +1,30 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Plus, Play, Pause, RotateCcw, Trash2, Edit3, CalendarIcon, RefreshCw } from 'lucide-react'
+import { Plus, Play, Pause, RotateCcw, Trash2, Edit3, CalendarIcon, RefreshCw, GripVertical, Calendar as CalendarLucide } from 'lucide-react'
 import { timeBoxDB, type TimeBox } from '@/lib/indexeddb'
 import { timerManager } from '@/lib/timer-manager'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 export default function TimeBoxManager() {
   const [timeBoxes, setTimeBoxes] = useState<TimeBox[]>([])
@@ -28,12 +45,26 @@ export default function TimeBoxManager() {
     isRunning: false
   })
 
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  )
+
   // Load timeboxes from IndexedDB on mount
   useEffect(() => {
     const loadTimeBoxes = async () => {
       try {
         const savedTimeBoxes = await timeBoxDB.getAllTimeBoxes()
-        setTimeBoxes(savedTimeBoxes)
+        // Sort by order field
+        const sortedTimeBoxes = savedTimeBoxes.sort((a, b) => {
+          const orderA = a.order ?? Number.MAX_SAFE_INTEGER
+          const orderB = b.order ?? Number.MAX_SAFE_INTEGER
+          return orderA - orderB
+        })
+        setTimeBoxes(sortedTimeBoxes)
       } catch (error) {
         console.error('Failed to load timeboxes:', error)
       } finally {
@@ -99,6 +130,7 @@ export default function TimeBoxManager() {
 
   const addTimeBox = async () => {
     if (newTask.title.trim()) {
+      const maxOrder = timeBoxes.reduce((max, box) => Math.max(max, box.order ?? 0), 0)
       const timeBox: TimeBox = {
         id: Date.now().toString(),
         title: newTask.title,
@@ -106,7 +138,8 @@ export default function TimeBoxManager() {
         description: newTask.description,
         completed: false,
         createdAt: new Date(),
-        scheduledDate: newTask.scheduledDate
+        scheduledDate: newTask.scheduledDate,
+        order: maxOrder + 1
       }
       try {
         await timeBoxDB.addTimeBox(timeBox)
@@ -187,13 +220,15 @@ export default function TimeBoxManager() {
 
   const rerunTimeBox = async (timeBox: TimeBox) => {
     // Create a new timebox based on the completed one
+    const maxOrder = timeBoxes.reduce((max, box) => Math.max(max, box.order ?? 0), 0)
     const newTimeBox: TimeBox = {
       id: Date.now().toString(),
       title: timeBox.title,
       duration: timeBox.duration,
       description: timeBox.description,
       completed: false,
-      createdAt: new Date()
+      createdAt: new Date(),
+      order: maxOrder + 1
     }
 
     try {
@@ -201,6 +236,34 @@ export default function TimeBoxManager() {
       setTimeBoxes([...timeBoxes, newTimeBox])
     } catch (error) {
       console.error('Failed to rerun timebox:', error)
+    }
+  }
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+
+    if (over && active.id !== over.id) {
+      const oldIndex = timeBoxes.findIndex((box) => box.id === active.id)
+      const newIndex = timeBoxes.findIndex((box) => box.id === over.id)
+
+      const newTimeBoxes = arrayMove(timeBoxes, oldIndex, newIndex)
+
+      // Update order for all timeboxes
+      const updatedTimeBoxes = newTimeBoxes.map((box, index) => ({
+        ...box,
+        order: index
+      }))
+
+      setTimeBoxes(updatedTimeBoxes)
+
+      // Save to database
+      try {
+        for (const box of updatedTimeBoxes) {
+          await timeBoxDB.updateTimeBox(box)
+        }
+      } catch (error) {
+        console.error('Failed to update timebox order:', error)
+      }
     }
   }
 
@@ -427,113 +490,194 @@ export default function TimeBoxManager() {
         )}
 
         {/* TimeBox List */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {timeBoxes
-            .filter((timeBox) => {
-              if (!filterDate) return true
-              if (!timeBox.scheduledDate) return false
-              const boxDate = new Date(timeBox.scheduledDate).toDateString()
-              return boxDate === filterDate.toDateString()
-            })
-            .map((timeBox) => (
-            <div
-              key={timeBox.id}
-              className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-all ${
-                timeBox.completed ? 'opacity-60 bg-green-50' : ''
-              } ${timerState.activeTimer === timeBox.id ? 'ring-2 ring-blue-500' : ''}`}
-            >
-              {editingTask === timeBox.id ? (
-                <EditTimeBoxForm
-                  timeBox={timeBox}
-                  onUpdate={updateTimeBox}
-                  onCancel={() => setEditingTask(null)}
-                />
-              ) : (
-                <>
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 flex-1">
-                      {timeBox.title}
-                    </h3>
-                    <div className="flex space-x-1">
-                      <button
-                        onClick={() => setEditingTask(timeBox.id)}
-                        className="text-gray-500 hover:text-blue-500 transition-colors"
-                      >
-                        <Edit3 size={16} />
-                      </button>
-                      <button
-                        onClick={() => deleteTimeBox(timeBox.id)}
-                        className="text-gray-500 hover:text-red-500 transition-colors"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="text-2xl font-bold text-blue-600 mb-2">
-                    {timeBox.duration}分
-                  </div>
-                  {timeBox.description && (
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
-                      {timeBox.description}
-                    </p>
-                  )}
-                  {!timeBox.completed && (
-                    <div className="flex space-x-2">
-                      {timerState.activeTimer === timeBox.id ? (
-                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                          実行中
-                        </span>
-                      ) : (
-                        <button
-                          onClick={() => startTimer(timeBox)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-                          disabled={timerState.activeTimer !== null}
-                        >
-                          <Play size={16} />
-                          <span>開始</span>
-                        </button>
-                      )}
-                      <button
-                        onClick={() => completeTimeBox(timeBox.id)}
-                        className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
-                      >
-                        完了
-                      </button>
-                    </div>
-                  )}
-                  {timeBox.completed && (
-                    <div className="flex items-center space-x-2">
-                      <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                        完了済み
-                      </span>
-                      <button
-                        onClick={() => rerunTimeBox(timeBox)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg flex items-center space-x-1 text-sm transition-colors"
-                        title="このタスクを再実施"
-                      >
-                        <RefreshCw size={14} />
-                        <span>再実施</span>
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {timeBoxes.length === 0 && (
+        {timeBoxes.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
-              <Calendar size={64} className="mx-auto" />
+              <CalendarLucide size={64} className="mx-auto" />
             </div>
             <p className="text-gray-600 dark:text-gray-300 text-lg">
               まだタイムボックスがありません。<br />
               新しいタスクを追加して始めましょう！
             </p>
           </div>
+        ) : (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={timeBoxes
+                .filter((timeBox) => {
+                  if (!filterDate) return true
+                  if (!timeBox.scheduledDate) return false
+                  const boxDate = new Date(timeBox.scheduledDate).toDateString()
+                  return boxDate === filterDate.toDateString()
+                })
+                .map((box) => box.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {timeBoxes
+                  .filter((timeBox) => {
+                    if (!filterDate) return true
+                    if (!timeBox.scheduledDate) return false
+                    const boxDate = new Date(timeBox.scheduledDate).toDateString()
+                    return boxDate === filterDate.toDateString()
+                  })
+                  .map((timeBox) => (
+                    <SortableTimeBoxCard
+                      key={timeBox.id}
+                      timeBox={timeBox}
+                      timerState={timerState}
+                      editingTask={editingTask}
+                      onEdit={setEditingTask}
+                      onUpdate={updateTimeBox}
+                      onDelete={deleteTimeBox}
+                      onStart={startTimer}
+                      onComplete={completeTimeBox}
+                      onRerun={rerunTimeBox}
+                    />
+                  ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
       </div>
+    </div>
+  )
+}
+
+// Sortable TimeBox Card Component
+function SortableTimeBoxCard({
+  timeBox,
+  timerState,
+  editingTask,
+  onEdit,
+  onUpdate,
+  onDelete,
+  onStart,
+  onComplete,
+  onRerun,
+}: {
+  timeBox: TimeBox
+  timerState: { activeTimer: string | null; timeRemaining: number; isRunning: boolean }
+  editingTask: string | null
+  onEdit: (id: string | null) => void
+  onUpdate: (id: string, data: Partial<TimeBox>) => void
+  onDelete: (id: string) => void
+  onStart: (timeBox: TimeBox) => void
+  onComplete: (id: string) => void
+  onRerun: (timeBox: TimeBox) => void
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: timeBox.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-all ${
+        timeBox.completed ? 'opacity-60 bg-green-50 dark:bg-green-900/20' : ''
+      } ${timerState.activeTimer === timeBox.id ? 'ring-2 ring-blue-500' : ''}`}
+    >
+      {editingTask === timeBox.id ? (
+        <EditTimeBoxForm
+          timeBox={timeBox}
+          onUpdate={onUpdate}
+          onCancel={() => onEdit(null)}
+        />
+      ) : (
+        <>
+          <div className="flex justify-between items-start mb-3">
+            <div className="flex items-center gap-2 flex-1">
+              <button
+                {...attributes}
+                {...listeners}
+                className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <GripVertical size={20} />
+              </button>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                {timeBox.title}
+              </h3>
+            </div>
+            <div className="flex space-x-1">
+              <button
+                onClick={() => onEdit(timeBox.id)}
+                className="text-gray-500 hover:text-blue-500 transition-colors"
+              >
+                <Edit3 size={16} />
+              </button>
+              <button
+                onClick={() => onDelete(timeBox.id)}
+                className="text-gray-500 hover:text-red-500 transition-colors"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          </div>
+          <div className="text-2xl font-bold text-blue-600 mb-2">
+            {timeBox.duration}分
+          </div>
+          {timeBox.description && (
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">
+              {timeBox.description}
+            </p>
+          )}
+          {!timeBox.completed && (
+            <div className="flex space-x-2">
+              {timerState.activeTimer === timeBox.id ? (
+                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                  実行中
+                </span>
+              ) : (
+                <button
+                  onClick={() => onStart(timeBox)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+                  disabled={timerState.activeTimer !== null}
+                >
+                  <Play size={16} />
+                  <span>開始</span>
+                </button>
+              )}
+              <button
+                onClick={() => onComplete(timeBox.id)}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                完了
+              </button>
+            </div>
+          )}
+          {timeBox.completed && (
+            <div className="flex items-center space-x-2">
+              <span className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-3 py-1 rounded-full text-sm font-medium">
+                完了済み
+              </span>
+              <button
+                onClick={() => onRerun(timeBox)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg flex items-center space-x-1 text-sm transition-colors"
+                title="このタスクを再実施"
+              >
+                <RefreshCw size={14} />
+                <span>再実施</span>
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }
