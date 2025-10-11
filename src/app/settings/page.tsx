@@ -147,7 +147,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Sound Setting */}
-            <div className="p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-4">
                   <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
@@ -235,7 +235,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Default Duration Setting */}
-            <div className="p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-4">
                   <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full">
@@ -286,7 +286,7 @@ export default function SettingsPage() {
             </div>
 
             {/* Notification Setting */}
-            <div className="p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-4">
                   <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
