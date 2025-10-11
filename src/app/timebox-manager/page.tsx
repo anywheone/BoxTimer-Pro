@@ -22,7 +22,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 
@@ -243,27 +243,27 @@ export default function TimeBoxManager() {
     const { active, over } = event
 
     if (over && active.id !== over.id) {
-      const oldIndex = timeBoxes.findIndex((box) => box.id === active.id)
-      const newIndex = timeBoxes.findIndex((box) => box.id === over.id)
+      setTimeBoxes((items) => {
+        const oldIndex = items.findIndex((box) => box.id === active.id)
+        const newIndex = items.findIndex((box) => box.id === over.id)
 
-      const newTimeBoxes = arrayMove(timeBoxes, oldIndex, newIndex)
+        const newTimeBoxes = arrayMove(items, oldIndex, newIndex)
 
-      // Update order for all timeboxes
-      const updatedTimeBoxes = newTimeBoxes.map((box, index) => ({
-        ...box,
-        order: index
-      }))
+        // Update order for all timeboxes
+        const updatedTimeBoxes = newTimeBoxes.map((box, index) => ({
+          ...box,
+          order: index
+        }))
 
-      setTimeBoxes(updatedTimeBoxes)
+        // Save to database asynchronously
+        Promise.all(
+          updatedTimeBoxes.map((box) => timeBoxDB.updateTimeBox(box))
+        ).catch((error) => {
+          console.error('Failed to update timebox order:', error)
+        })
 
-      // Save to database
-      try {
-        for (const box of updatedTimeBoxes) {
-          await timeBoxDB.updateTimeBox(box)
-        }
-      } catch (error) {
-        console.error('Failed to update timebox order:', error)
-      }
+        return updatedTimeBoxes
+      })
     }
   }
 
@@ -507,15 +507,8 @@ export default function TimeBoxManager() {
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={timeBoxes
-                .filter((timeBox) => {
-                  if (!filterDate) return true
-                  if (!timeBox.scheduledDate) return false
-                  const boxDate = new Date(timeBox.scheduledDate).toDateString()
-                  return boxDate === filterDate.toDateString()
-                })
-                .map((box) => box.id)}
-              strategy={verticalListSortingStrategy}
+              items={timeBoxes.map((box) => box.id)}
+              strategy={rectSortingStrategy}
             >
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {timeBoxes
