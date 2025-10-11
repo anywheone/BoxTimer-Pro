@@ -86,7 +86,7 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-6 flex items-center justify-center">
+      <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">設定を読み込み中...</p>
@@ -111,15 +111,15 @@ export default function SettingsPage() {
           <div className="space-y-4 sm:space-y-8">
             {/* Dark Mode Setting */}
             <div className="flex items-center justify-between p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div className="flex items-center space-x-3 sm:space-x-4">
-                <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
+              <div className="flex items-center space-x-3 sm:space-x-4 flex-1">
+                <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full flex-shrink-0">
                   {settings.darkMode ? (
                     <Moon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                   ) : (
                     <Sun className="h-6 w-6 text-blue-600" />
                   )}
                 </div>
-                <div>
+                <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                     ダークモード
                   </h3>
@@ -149,15 +149,15 @@ export default function SettingsPage() {
             {/* Sound Setting */}
             <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
+                <div className="flex items-center space-x-4 flex-1">
+                  <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full flex-shrink-0">
                     {settings.soundEnabled ? (
                       <Volume2 className="h-6 w-6 text-green-600 dark:text-green-400" />
                     ) : (
                       <VolumeX className="h-6 w-6 text-green-600 dark:text-green-400" />
                     )}
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                       アラーム音
                     </h3>
@@ -236,12 +236,12 @@ export default function SettingsPage() {
 
             {/* Default Duration Setting */}
             <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div className="flex items-center justify-between mb-4">
+              <div className="mb-4">
                 <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full">
+                  <div className="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-full flex-shrink-0">
                     <Clock className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                       デフォルトのタイムボックス時間
                     </h3>
@@ -288,15 +288,15 @@ export default function SettingsPage() {
             {/* Notification Setting */}
             <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
+                <div className="flex items-center space-x-4 flex-1">
+                  <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full flex-shrink-0">
                     {settings.notificationEnabled && notificationPermission === 'granted' ? (
                       <Bell className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                     ) : (
                       <BellOff className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                     )}
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                       デスクトップ通知
                     </h3>
