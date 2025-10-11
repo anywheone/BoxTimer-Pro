@@ -8,6 +8,7 @@ interface TimeBox {
   createdAt: Date
   scheduledDate?: Date // 予定日
   order?: number // 表示順序
+  comment?: string // 振り返りコメント
 }
 
 interface Settings {
