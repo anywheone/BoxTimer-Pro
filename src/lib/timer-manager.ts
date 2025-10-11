@@ -123,7 +123,8 @@ class TimerManager {
 
         // Play sound if enabled
         if (settings.soundEnabled && typeof window !== 'undefined') {
-          this.playAlarmSound(settings.soundVolume)
+          const { playSound } = await import('./sounds')
+          playSound(settings.soundType, settings.soundVolume)
         }
 
         // Show notification if enabled
@@ -170,44 +171,6 @@ class TimerManager {
 
       // Clear timer state
       this.clearTimer()
-    }
-  }
-
-  private playAlarmSound(volume: number): void {
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-
-      // Pleasant notification melody: C5 -> E5 -> G5 -> C6
-      const melody = [523.25, 659.25, 783.99, 1046.50] // C5, E5, G5, C6
-      const noteDuration = 0.3
-      const totalDuration = melody.length * noteDuration
-
-      melody.forEach((frequency, index) => {
-        const oscillator = audioContext.createOscillator()
-        const gainNode = audioContext.createGain()
-
-        oscillator.connect(gainNode)
-        gainNode.connect(audioContext.destination)
-
-        // Use sine wave for smoother sound
-        oscillator.type = 'sine'
-        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime)
-
-        // Create fade in/out envelope for smoother sound
-        const startTime = audioContext.currentTime + (index * noteDuration)
-        const endTime = startTime + noteDuration
-
-        gainNode.gain.setValueAtTime(0, startTime)
-        gainNode.gain.linearRampToValueAtTime(volume * 0.7, startTime + 0.05) // Fade in
-        gainNode.gain.setValueAtTime(volume * 0.7, endTime - 0.1)
-        gainNode.gain.linearRampToValueAtTime(0, endTime) // Fade out
-
-        oscillator.start(startTime)
-        oscillator.stop(endTime)
-      })
-
-    } catch (error) {
-      console.error('Failed to play alarm sound:', error)
     }
   }
 

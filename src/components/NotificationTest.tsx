@@ -30,20 +30,16 @@ export default function NotificationTest() {
 
   return (
     <>
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4">
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">
-          通知テスト
-        </h3>
-        <button
-          onClick={testNotification}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors"
-        >
-          テスト通知
-        </button>
-      </div>
+      <button
+        onClick={testNotification}
+        className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1.5 rounded-md transition-colors flex items-center space-x-2 text-sm"
+      >
+        <Bell size={16} />
+        <span>テスト通知</span>
+      </button>
 
       {showTestMessage && (
-        <div className="fixed top-20 right-4 bg-orange-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 z-50 animate-in slide-in-from-top-5 fade-in duration-300">
+        <div className="fixed top-20 right-4 bg-purple-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 z-50 animate-in slide-in-from-top-5 fade-in duration-300">
           <Bell size={20} />
           <span className="font-semibold">テスト通知を送信しました！</span>
         </div>
