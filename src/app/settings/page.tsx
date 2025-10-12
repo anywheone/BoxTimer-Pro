@@ -285,8 +285,8 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Notification Setting */}
-            <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            {/* Notification Setting - Hidden on mobile */}
+            <div className="hidden md:block p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-4 flex-1">
                   <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full flex-shrink-0">
