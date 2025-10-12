@@ -4,16 +4,16 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Header() {
   return (
-    <div className="flex items-center gap-2 w-full">
-      <SidebarTrigger className="md:hidden" />
+    <div className="flex items-center justify-center w-full relative">
+      <SidebarTrigger className="md:hidden absolute left-0" />
       <Link href="/">
         <Image
           src="/BoxTimer_Logo.png"
           alt="サイトロゴ"
-          width={150}
-          height={100}
+          width={180}
+          height={120}
           priority
-          className="h-20 w-auto"
+          className="h-24 w-auto"
         />
       </Link>
     </div>
