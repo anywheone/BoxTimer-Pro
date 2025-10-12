@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { Moon, Sun, Volume2, VolumeX, Bell, BellOff, Save, RotateCcw, Clock } from 'lucide-react'
+import { Moon, Sun, Volume2, VolumeX, Bell, BellOff, Save, RotateCcw, Clock, PanelLeft, PanelRight } from 'lucide-react'
 import { timeBoxDB, type Settings } from '@/lib/indexeddb'
 import { themeManager } from '@/lib/theme-manager'
 import NotificationTest from '@/components/NotificationTest'
@@ -16,6 +16,7 @@ export default function SettingsPage() {
     soundType: 'chime',
     notificationEnabled: true,
     defaultDuration: 25,
+    sidebarPosition: 'left',
     updatedAt: new Date()
   })
   const [isLoading, setIsLoading] = useState(true)
@@ -78,6 +79,7 @@ export default function SettingsPage() {
       soundType: 'chime',
       notificationEnabled: true,
       defaultDuration: 25,
+      sidebarPosition: 'left',
       updatedAt: new Date()
     }
     setSettings(defaultSettings)
@@ -281,6 +283,55 @@ export default function SettingsPage() {
                 <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                   <span>1分〜180分</span>
                   <span>現在: {settings.defaultDuration || '未設定'}分</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar Position Setting - Only visible on mobile */}
+            <div className="md:hidden p-4 sm:p-6 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <div className="mb-4">
+                <div className="flex items-center space-x-4">
+                  <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-full flex-shrink-0">
+                    {settings.sidebarPosition === 'left' ? (
+                      <PanelLeft className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                    ) : (
+                      <PanelRight className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                      メニューの位置
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      サイドメニューを左右どちらから開くか選択
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => updateSetting('sidebarPosition', 'left')}
+                    className={`p-4 rounded-lg border-2 transition-all flex items-center justify-center space-x-2 ${
+                      settings.sidebarPosition === 'left'
+                        ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-700'
+                    }`}
+                  >
+                    <PanelLeft className="h-5 w-5" />
+                    <span className="font-semibold">左</span>
+                  </button>
+                  <button
+                    onClick={() => updateSetting('sidebarPosition', 'right')}
+                    className={`p-4 rounded-lg border-2 transition-all flex items-center justify-center space-x-2 ${
+                      settings.sidebarPosition === 'right'
+                        ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-700'
+                    }`}
+                  >
+                    <PanelRight className="h-5 w-5" />
+                    <span className="font-semibold">右</span>
+                  </button>
                 </div>
               </div>
             </div>
