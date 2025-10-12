@@ -6,8 +6,10 @@ import { timeBoxDB, type Settings } from '@/lib/indexeddb'
 import { themeManager } from '@/lib/theme-manager'
 import NotificationTest from '@/components/NotificationTest'
 import { playSound, soundTypes } from '@/lib/sounds'
+import { useSidebarPosition } from '@/contexts/SidebarPositionContext'
 
 export default function SettingsPage() {
+  const { setSidebarPosition } = useSidebarPosition()
   const [settings, setSettings] = useState<Settings>({
     id: 'app-settings',
     darkMode: false,
@@ -59,6 +61,8 @@ export default function SettingsPage() {
       console.log('Saving settings:', settings) // Debug log
       await timeBoxDB.updateSettings(settings)
       themeManager.applyTheme(settings.darkMode)
+      // Update sidebar position context immediately
+      setSidebarPosition(settings.sidebarPosition || 'left')
       setShowSaved(true)
       setTimeout(() => setShowSaved(false), 2000)
       console.log('Settings saved successfully') // Debug log

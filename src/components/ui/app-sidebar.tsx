@@ -1,8 +1,7 @@
 "use client"
 
-import { useState, useEffect } from 'react'
 import { Calendar, Home, Inbox, BarChart3, Settings } from "lucide-react"
-import { timeBoxDB } from '@/lib/indexeddb'
+import { useSidebarPosition } from '@/contexts/SidebarPositionContext'
 
 import {
   Sidebar,
@@ -50,19 +49,7 @@ const functionItems = [
 ]
 
 export function AppSidebar() {
-  const [sidebarPosition, setSidebarPosition] = useState<'left' | 'right'>('left')
-
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const settings = await timeBoxDB.getSettings()
-        setSidebarPosition(settings.sidebarPosition || 'left')
-      } catch (error) {
-        console.error('Failed to load sidebar position:', error)
-      }
-    }
-    loadSettings()
-  }, [])
+  const { sidebarPosition } = useSidebarPosition()
 
   return (
     <Sidebar collapsible="icon" className="relative" side={sidebarPosition}>
