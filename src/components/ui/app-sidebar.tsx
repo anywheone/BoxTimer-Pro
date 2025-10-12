@@ -50,7 +50,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="relative">
       <SidebarHeader>
         <div className="flex items-center justify-end px-2">
-          <SidebarTrigger />
+          <SidebarTrigger className="hidden md:flex" />
         </div>
       </SidebarHeader>
       <SidebarContent>

@@ -31,14 +31,14 @@ export default function RootLayout({
         <ThemeProvider>
           <SidebarProvider>
             {/* 固定ヘッダー */}
-            <div className="fixed top-0 left-0 right-0 h-24 flex items-center bg-sidebar border-b border-sidebar-border dark:bg-gray-800 dark:border-gray-700 z-50 pl-4 header-padding-adjust">
+            <div className="fixed top-0 left-0 right-0 h-20 flex items-center bg-sidebar border-b border-sidebar-border dark:bg-gray-800 dark:border-gray-700 z-50 pl-4 header-padding-adjust">
               <Header />
             </div>
 
             {/* ヘッダーの下にサイドバーとメインコンテンツ */}
             <div className="flex min-h-screen">
               <AppSidebar />
-              <main className="flex-1 min-w-0 pt-24">
+              <main className="flex-1 min-w-0 pt-20">
                 {children}
               </main>
             </div>
