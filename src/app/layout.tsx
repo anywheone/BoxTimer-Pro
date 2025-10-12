@@ -36,9 +36,9 @@ export default function RootLayout({
             </div>
 
             {/* ヘッダーの下にサイドバーとメインコンテンツ */}
-            <div className="flex">
+            <div className="flex h-full">
               <AppSidebar />
-              <main className="flex-1 min-w-0 pt-16 overflow-y-auto" style={{ height: 'calc(100vh - 0rem)' }}>
+              <main className="flex-1 min-w-0 pt-16 overflow-y-auto">
                 {children}
               </main>
             </div>
