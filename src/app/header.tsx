@@ -6,14 +6,14 @@ export default function Header() {
   return (
     <div className="flex items-center justify-center w-full relative">
       <SidebarTrigger className="md:hidden absolute left-0" />
-      <Link href="/">
+      <Link href="/" className="inline-block overflow-visible">
         <Image
           src="/BoxTimer_Logo.png"
           alt="サイトロゴ"
-          width={160}
-          height={100}
+          width={180}
+          height={120}
           priority
-          className="h-20 w-auto"
+          className="h-24 w-auto scale-110"
         />
       </Link>
     </div>
