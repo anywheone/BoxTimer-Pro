@@ -5,6 +5,7 @@ import { CalendarIcon, Clock, CheckCircle, Target, TrendingUp, TrendingDown, Mes
 import { timeBoxDB, type TimeBox } from '@/lib/indexeddb'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
 
@@ -300,19 +301,31 @@ export default function ReviewPage() {
                               <div className="h-5 w-5 rounded-full border-2 border-gray-400 mr-3 flex-shrink-0" />
                             )}
                             <div className="min-w-0 flex-1">
-                              <h4
-                                className="font-semibold text-gray-800 dark:text-gray-200 truncate"
-                                title={task.title}
-                              >
-                                {task.title}
-                              </h4>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <h4 className="font-semibold text-gray-800 dark:text-gray-200 truncate cursor-default">
+                                      {task.title}
+                                    </h4>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="max-w-md">
+                                    <p className="break-words">{task.title}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                               {task.description && (
-                                <p
-                                  className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2"
-                                  title={task.description}
-                                >
-                                  {task.description}
-                                </p>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2 cursor-default">
+                                        {task.description}
+                                      </p>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="max-w-md">
+                                      <p className="whitespace-pre-wrap break-words">{task.description}</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               )}
                             </div>
                           </div>
