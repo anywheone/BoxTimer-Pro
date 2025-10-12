@@ -99,6 +99,13 @@
     min-height: 100vh;
   }
 
+  /* PC画面でスクロールバーを常に表示 */
+  @media (min-width: 768px) {
+    html {
+      overflow-y: scroll;
+    }
+  }
+
   /* Ensure dark mode variables are applied immediately */
   html.dark {
     background-color: hsl(var(--background));
@@ -146,11 +153,11 @@
   }
 
   .dark ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.4);
   }
 
   .dark ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.6);
   }
 
   /* Firefox用のスクロールバースタイル */
@@ -160,12 +167,12 @@
   }
 
   .dark * {
-    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
   }
 
-  /* サイドバーのスペーサーを非表示にして余白を削除 */
+  /* サイドバーのスペーサーを非表示に */
   .group.peer[data-variant="sidebar"] > div:first-child {
-    display: none;
+    display: none !important;
   }
 
   /* ヘッダーのスクロールバーを非表示にする */

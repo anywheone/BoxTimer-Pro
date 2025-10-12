@@ -48,6 +48,11 @@ const functionItems = [
 export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="relative">
+      <SidebarHeader>
+        <div className="flex items-center justify-end px-2">
+          <SidebarTrigger />
+        </div>
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="px-2">説明</SidebarGroupLabel>
