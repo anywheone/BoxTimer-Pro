@@ -109,6 +109,22 @@
     scrollbar-gutter: stable;
   }
 
+  /* ヘッダーの右パディングをスクロールバー幅分調整 */
+  .header-padding-adjust {
+    padding-right: calc(1rem + 8px);
+  }
+
+  /* メインコンテンツの右パディングをスクロールバー幅分調整 */
+  main > div:first-child {
+    padding-right: calc(0.5rem + 8px);
+  }
+
+  @media (min-width: 640px) {
+    main > div:first-child {
+      padding-right: calc(1.5rem + 8px);
+    }
+  }
+
   /* WebKitブラウザ用のスクロールバースタイル */
   ::-webkit-scrollbar {
     width: 8px;
@@ -149,5 +165,15 @@
   /* サイドバーのスペーサーを非表示にして余白を削除 */
   .group.peer[data-variant="sidebar"] > div:first-child {
     display: none;
+  }
+
+  /* ヘッダーのスクロールバーを非表示にする */
+  .header-scrollbar-hidden {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .header-scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
   }
 }
