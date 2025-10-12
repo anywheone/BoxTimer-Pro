@@ -6,6 +6,7 @@ import { AppSidebar } from "@/components/ui/app-sidebar"
 import Header from './header'
 import ThemeProvider from '@/components/ThemeProvider'
 import NoFlashScript from '@/components/NoFlashScript'
+import PullToRefresh from '@/components/PullToRefresh'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -30,6 +31,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <SidebarProvider defaultOpen={false}>
+            <PullToRefresh />
             {/* 固定ヘッダー */}
             <div className="fixed top-0 left-0 right-0 h-16 flex items-center bg-sidebar border-b border-sidebar-border dark:bg-gray-800 dark:border-gray-700 z-50 pl-4 header-padding-adjust overflow-visible">
               <Header />
