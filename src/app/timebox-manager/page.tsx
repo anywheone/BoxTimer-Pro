@@ -6,7 +6,6 @@ import { timeBoxDB, type TimeBox } from '@/lib/indexeddb'
 import { timerManager } from '@/lib/timer-manager'
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import {
@@ -636,18 +635,9 @@ function SortableTimeBoxCard({
               >
                 <GripVertical size={20} />
               </button>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 truncate cursor-default">
-                      {timeBox.title}
-                    </h3>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-xs">
-                    <p>{timeBox.title}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 break-words">
+                {timeBox.title}
+              </h3>
             </div>
             <div className="flex space-x-1 flex-shrink-0">
               <button
@@ -676,18 +666,9 @@ function SortableTimeBoxCard({
             )}
           </div>
           {timeBox.description && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 cursor-default">
-                    {timeBox.description}
-                  </p>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs">
-                  <p className="whitespace-pre-wrap">{timeBox.description}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 whitespace-pre-wrap break-words">
+              {timeBox.description}
+            </p>
           )}
           {!timeBox.completed && (
             <div className="flex space-x-2">
