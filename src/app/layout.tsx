@@ -29,7 +29,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ThemeProvider>
-          <SidebarProvider>
+          <SidebarProvider defaultOpen={false}>
             {/* 固定ヘッダー */}
             <div className="fixed top-0 left-0 right-0 h-16 flex items-center bg-sidebar border-b border-sidebar-border dark:bg-gray-800 dark:border-gray-700 z-50 pl-4 header-padding-adjust overflow-visible">
               <Header />

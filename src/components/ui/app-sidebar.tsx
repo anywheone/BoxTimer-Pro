@@ -60,7 +60,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {explanationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild tooltip={item.title}>
                     <a href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -78,7 +78,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {functionItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild tooltip={item.title}>
                     <a href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
