@@ -117,17 +117,13 @@
     scrollbar-gutter: stable;
   }
 
-  /* ヘッダーの右パディングをスクロールバー幅分調整 */
-  .header-padding-adjust {
-    padding-right: calc(1rem + 8px);
-  }
+  /* ヘッダーの右パディングをスクロールバー幅分調整（デスクトップのみ） */
+  @media (min-width: 768px) {
+    .header-padding-adjust {
+      padding-right: calc(1rem + 8px);
+    }
 
-  /* メインコンテンツの右パディングをスクロールバー幅分調整 */
-  main > div:first-child {
-    padding-right: calc(0.5rem + 8px);
-  }
-
-  @media (min-width: 640px) {
+    /* メインコンテンツの右パディングをスクロールバー幅分調整 */
     main > div:first-child {
       padding-right: calc(1.5rem + 8px);
     }
