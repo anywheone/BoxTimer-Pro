@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from "next/link"
 import Image from "next/image"
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -21,24 +21,11 @@ export default function Header() {
   // Use localStorage for initial value to prevent flickering
   const [localPosition, setLocalPosition] = useState<'left' | 'right'>(getInitialPosition)
   const { sidebarPosition } = useSidebarPosition()
-  const isMobileRef = useRef(false)
 
-  // Check if mobile on mount
+  // Update local position when context changes
+  // スマホでも設定変更を反映するため、常にsidebarPositionを追従
   useEffect(() => {
-    const checkMobile = () => {
-      isMobileRef.current = window.innerWidth < 768
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
-
-  // Update local position when context changes (only on desktop)
-  useEffect(() => {
-    // スマホ表示では初期位置を維持し、動的変更しない
-    if (!isMobileRef.current) {
-      setLocalPosition(sidebarPosition)
-    }
+    setLocalPosition(sidebarPosition)
   }, [sidebarPosition])
 
   return (
