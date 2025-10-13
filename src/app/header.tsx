@@ -9,7 +9,7 @@ export default function Header() {
   const { sidebarPosition } = useSidebarPosition()
 
   return (
-    <div className="flex items-center justify-center w-full relative">
+    <div className="flex items-center justify-center md:justify-start w-full relative">
       <SidebarTrigger
         className={`md:hidden absolute ${sidebarPosition === 'left' ? 'left-0' : 'right-0'}`}
       />
