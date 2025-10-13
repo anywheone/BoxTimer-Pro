@@ -12,14 +12,28 @@ interface SidebarPositionContextType {
 
 const SidebarPositionContext = createContext<SidebarPositionContextType | undefined>(undefined)
 
+// Get initial position from localStorage synchronously
+function getInitialPosition(): SidebarPosition {
+  if (typeof window === 'undefined') return 'left'
+  try {
+    const stored = localStorage.getItem('sidebarPosition')
+    return (stored === 'left' || stored === 'right') ? stored : 'left'
+  } catch {
+    return 'left'
+  }
+}
+
 export function SidebarPositionProvider({ children }: { children: React.ReactNode }) {
-  const [sidebarPosition, setSidebarPosition] = useState<SidebarPosition>('left')
+  const [sidebarPosition, setSidebarPosition] = useState<SidebarPosition>(getInitialPosition)
 
   useEffect(() => {
     const loadSettings = async () => {
       try {
         const settings = await timeBoxDB.getSettings()
-        setSidebarPosition(settings.sidebarPosition || 'left')
+        const position = settings.sidebarPosition || 'left'
+        setSidebarPosition(position)
+        // Sync to localStorage
+        localStorage.setItem('sidebarPosition', position)
       } catch (error) {
         console.error('Failed to load sidebar position:', error)
       }
@@ -27,8 +41,14 @@ export function SidebarPositionProvider({ children }: { children: React.ReactNod
     loadSettings()
   }, [])
 
+  // Update localStorage when position changes
+  const updatePosition = (position: SidebarPosition) => {
+    setSidebarPosition(position)
+    localStorage.setItem('sidebarPosition', position)
+  }
+
   return (
-    <SidebarPositionContext.Provider value={{ sidebarPosition, setSidebarPosition }}>
+    <SidebarPositionContext.Provider value={{ sidebarPosition, setSidebarPosition: updatePosition }}>
       {children}
     </SidebarPositionContext.Provider>
   )
