@@ -1,9 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
-import { usePathname } from 'next/navigation'
 import { Calendar, Home, Inbox, BarChart3, Settings } from "lucide-react"
-import { useSidebarPosition } from '@/contexts/SidebarPositionContext'
 
 import {
   Sidebar,
@@ -17,17 +14,6 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-
-// Get initial position from localStorage synchronously
-function getInitialPosition(): 'left' | 'right' {
-  if (typeof window === 'undefined') return 'left'
-  try {
-    const stored = localStorage.getItem('sidebarPosition')
-    return (stored === 'left' || stored === 'right') ? stored : 'left'
-  } catch {
-    return 'left'
-  }
-}
 
 // Menu items.
 const explanationItems = [
@@ -62,23 +48,8 @@ const functionItems = [
 ]
 
 export function AppSidebar() {
-  const [localPosition, setLocalPosition] = useState<'left' | 'right'>(getInitialPosition)
-  const { sidebarPosition } = useSidebarPosition()
-  const pathname = usePathname()
-
-  // Update local position when context changes
-  useEffect(() => {
-    setLocalPosition(sidebarPosition)
-  }, [sidebarPosition])
-
-  // ページ遷移後、localStorageから確実に読み直して正しい値を反映
-  useEffect(() => {
-    const storedPosition = getInitialPosition()
-    setLocalPosition(storedPosition)
-  }, [pathname])
-
   return (
-    <Sidebar collapsible="icon" className="relative" side={localPosition}>
+    <Sidebar collapsible="icon" className="relative" side="left">
       <SidebarHeader className="sticky top-0 z-10 bg-sidebar border-b border-sidebar-border">
         <div className="flex items-center justify-end px-2">
           <SidebarTrigger className="hidden md:flex" />

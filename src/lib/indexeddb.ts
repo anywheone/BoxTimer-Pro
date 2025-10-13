@@ -19,7 +19,6 @@ interface Settings {
   soundType: 'bell' | 'chime' | 'harp' // アラーム音の種類
   notificationEnabled: boolean
   defaultDuration: number // デフォルトのタイムボックス時間（分）
-  sidebarPosition?: 'left' | 'right' // サイドバーの位置（モバイル用）
   updatedAt: Date
 }
 
@@ -238,7 +237,6 @@ class TimeBoxDB {
             soundType: 'chime',
             notificationEnabled: true,
             defaultDuration: 25,
-            sidebarPosition: 'left',
             updatedAt: new Date()
           }
           resolve(defaultSettings)
