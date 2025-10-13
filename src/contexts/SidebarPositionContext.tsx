@@ -32,12 +32,26 @@ export function SidebarPositionProvider({ children }: { children: React.ReactNod
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const settings = await timeBoxDB.getSettings()
-        const position = settings.sidebarPosition || 'left'
-        setSidebarPosition(position)
-        setSavedPosition(position)
-        // Sync to localStorage
-        localStorage.setItem('sidebarPosition', position)
+        // localStorageの値を優先（すでに設定されている場合）
+        const localStored = localStorage.getItem('sidebarPosition')
+        if (localStored === 'left' || localStored === 'right') {
+          // localStorageに値がある場合は、それを使用してIndexedDBと同期
+          setSidebarPosition(localStored)
+          setSavedPosition(localStored)
+
+          // IndexedDBも同じ値に更新
+          const settings = await timeBoxDB.getSettings()
+          if (settings.sidebarPosition !== localStored) {
+            await timeBoxDB.updateSettings({ ...settings, sidebarPosition: localStored })
+          }
+        } else {
+          // localStorageに値がない場合のみ、IndexedDBから読み込む
+          const settings = await timeBoxDB.getSettings()
+          const position = settings.sidebarPosition || 'left'
+          setSidebarPosition(position)
+          setSavedPosition(position)
+          localStorage.setItem('sidebarPosition', position)
+        }
       } catch (error) {
         console.error('Failed to load sidebar position:', error)
       }
