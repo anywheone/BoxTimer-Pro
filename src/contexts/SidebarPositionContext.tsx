@@ -7,7 +7,9 @@ type SidebarPosition = 'left' | 'right'
 
 interface SidebarPositionContextType {
   sidebarPosition: SidebarPosition
-  setSidebarPosition: (position: SidebarPosition) => void
+  setTemporarySidebarPosition: (position: SidebarPosition) => void
+  saveSidebarPosition: (position: SidebarPosition) => Promise<void>
+  resetToSaved: () => void
 }
 
 const SidebarPositionContext = createContext<SidebarPositionContextType | undefined>(undefined)
@@ -25,6 +27,7 @@ function getInitialPosition(): SidebarPosition {
 
 export function SidebarPositionProvider({ children }: { children: React.ReactNode }) {
   const [sidebarPosition, setSidebarPosition] = useState<SidebarPosition>(getInitialPosition)
+  const [savedPosition, setSavedPosition] = useState<SidebarPosition>(getInitialPosition)
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -32,6 +35,7 @@ export function SidebarPositionProvider({ children }: { children: React.ReactNod
         const settings = await timeBoxDB.getSettings()
         const position = settings.sidebarPosition || 'left'
         setSidebarPosition(position)
+        setSavedPosition(position)
         // Sync to localStorage
         localStorage.setItem('sidebarPosition', position)
       } catch (error) {
@@ -41,14 +45,37 @@ export function SidebarPositionProvider({ children }: { children: React.ReactNod
     loadSettings()
   }, [])
 
-  // Update localStorage when position changes
-  const updatePosition = (position: SidebarPosition) => {
+  // Temporarily update position (preview only, not saved)
+  const setTemporarySidebarPosition = (position: SidebarPosition) => {
     setSidebarPosition(position)
+  }
+
+  // Save position to localStorage and IndexedDB
+  const saveSidebarPosition = async (position: SidebarPosition) => {
+    setSidebarPosition(position)
+    setSavedPosition(position)
     localStorage.setItem('sidebarPosition', position)
+
+    try {
+      const settings = await timeBoxDB.getSettings()
+      await timeBoxDB.updateSettings({ ...settings, sidebarPosition: position })
+    } catch (error) {
+      console.error('Failed to save sidebar position:', error)
+    }
+  }
+
+  // Reset to last saved position
+  const resetToSaved = () => {
+    setSidebarPosition(savedPosition)
   }
 
   return (
-    <SidebarPositionContext.Provider value={{ sidebarPosition, setSidebarPosition: updatePosition }}>
+    <SidebarPositionContext.Provider value={{
+      sidebarPosition,
+      setTemporarySidebarPosition,
+      saveSidebarPosition,
+      resetToSaved
+    }}>
       {children}
     </SidebarPositionContext.Provider>
   )

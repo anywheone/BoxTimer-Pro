@@ -9,7 +9,7 @@ import { playSound, soundTypes } from '@/lib/sounds'
 import { useSidebarPosition } from '@/contexts/SidebarPositionContext'
 
 export default function SettingsPage() {
-  const { setSidebarPosition } = useSidebarPosition()
+  const { setTemporarySidebarPosition, saveSidebarPosition, resetToSaved } = useSidebarPosition()
   const [settings, setSettings] = useState<Settings>({
     id: 'app-settings',
     darkMode: false,
@@ -45,7 +45,12 @@ export default function SettingsPage() {
       }
     }
     loadSettings()
-  }, [])
+
+    // Reset sidebar position to saved when leaving the page
+    return () => {
+      resetToSaved()
+    }
+  }, [resetToSaved])
 
   const updateSetting = <K extends keyof Settings>(key: K, value: Settings[K]) => {
     setSettings(prev => ({
@@ -61,8 +66,8 @@ export default function SettingsPage() {
       console.log('Saving settings:', settings) // Debug log
       await timeBoxDB.updateSettings(settings)
       themeManager.applyTheme(settings.darkMode)
-      // Update sidebar position context immediately
-      setSidebarPosition(settings.sidebarPosition || 'left')
+      // Save sidebar position permanently
+      await saveSidebarPosition(settings.sidebarPosition || 'left')
       setShowSaved(true)
       setTimeout(() => setShowSaved(false), 2000)
       console.log('Settings saved successfully') // Debug log
@@ -315,7 +320,10 @@ export default function SettingsPage() {
               <div className="mt-4">
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => updateSetting('sidebarPosition', 'left')}
+                    onClick={() => {
+                      updateSetting('sidebarPosition', 'left')
+                      setTemporarySidebarPosition('left')
+                    }}
                     className={`p-4 rounded-lg border-2 transition-all flex items-center justify-center space-x-2 ${
                       settings.sidebarPosition === 'left'
                         ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
@@ -326,7 +334,10 @@ export default function SettingsPage() {
                     <span className="font-semibold">左</span>
                   </button>
                   <button
-                    onClick={() => updateSetting('sidebarPosition', 'right')}
+                    onClick={() => {
+                      updateSetting('sidebarPosition', 'right')
+                      setTemporarySidebarPosition('right')
+                    }}
                     className={`p-4 rounded-lg border-2 transition-all flex items-center justify-center space-x-2 ${
                       settings.sidebarPosition === 'right'
                         ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
