@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import Link from "next/link"
 import Image from "next/image"
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -21,12 +22,19 @@ export default function Header() {
   // Use localStorage for initial value to prevent flickering
   const [localPosition, setLocalPosition] = useState<'left' | 'right'>(getInitialPosition)
   const { sidebarPosition } = useSidebarPosition()
+  const pathname = usePathname()
 
   // Update local position when context changes
   // スマホでも設定変更を反映するため、常にsidebarPositionを追従
   useEffect(() => {
     setLocalPosition(sidebarPosition)
   }, [sidebarPosition])
+
+  // ページ遷移後、localStorageから確実に読み直して正しい値を反映
+  useEffect(() => {
+    const storedPosition = getInitialPosition()
+    setLocalPosition(storedPosition)
+  }, [pathname])
 
   return (
     <div className="flex items-center justify-center md:justify-start w-full relative">
