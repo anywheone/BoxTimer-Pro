@@ -49,7 +49,7 @@ const functionItems = [
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon" className="relative" side="left">
+    <Sidebar collapsible="icon" className="relative" side="right">
       <SidebarHeader className="sticky top-0 z-10 bg-sidebar border-b border-sidebar-border">
         <div className="flex items-center justify-end px-2">
           <SidebarTrigger className="hidden md:flex" />
