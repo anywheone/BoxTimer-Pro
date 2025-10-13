@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Moon, Sun, Volume2, VolumeX, Bell, BellOff, Save, RotateCcw, Clock, PanelLeft, PanelRight } from 'lucide-react'
 import { timeBoxDB, type Settings } from '@/lib/indexeddb'
 import { themeManager } from '@/lib/theme-manager'
@@ -10,6 +10,12 @@ import { useSidebarPosition } from '@/contexts/SidebarPositionContext'
 
 export default function SettingsPage() {
   const { setTemporarySidebarPosition, saveSidebarPosition, resetToSaved } = useSidebarPosition()
+
+  // Use ref to store the latest resetToSaved function
+  const resetToSavedRef = useRef(resetToSaved)
+  useEffect(() => {
+    resetToSavedRef.current = resetToSaved
+  }, [resetToSaved])
   const [settings, setSettings] = useState<Settings>({
     id: 'app-settings',
     darkMode: false,
@@ -48,9 +54,9 @@ export default function SettingsPage() {
 
     // Reset sidebar position to saved when leaving the page
     return () => {
-      resetToSaved()
+      resetToSavedRef.current()
     }
-  }, [resetToSaved])
+  }, [])
 
   const updateSetting = <K extends keyof Settings>(key: K, value: Settings[K]) => {
     setSettings(prev => ({

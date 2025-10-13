@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { timeBoxDB } from '@/lib/indexeddb'
 
 type SidebarPosition = 'left' | 'right'
@@ -46,12 +46,12 @@ export function SidebarPositionProvider({ children }: { children: React.ReactNod
   }, [])
 
   // Temporarily update position (preview only, not saved)
-  const setTemporarySidebarPosition = (position: SidebarPosition) => {
+  const setTemporarySidebarPosition = useCallback((position: SidebarPosition) => {
     setSidebarPosition(position)
-  }
+  }, [])
 
   // Save position to localStorage and IndexedDB
-  const saveSidebarPosition = async (position: SidebarPosition) => {
+  const saveSidebarPosition = useCallback(async (position: SidebarPosition) => {
     setSidebarPosition(position)
     setSavedPosition(position)
     localStorage.setItem('sidebarPosition', position)
@@ -62,12 +62,12 @@ export function SidebarPositionProvider({ children }: { children: React.ReactNod
     } catch (error) {
       console.error('Failed to save sidebar position:', error)
     }
-  }
+  }, [])
 
   // Reset to last saved position
-  const resetToSaved = () => {
+  const resetToSaved = useCallback(() => {
     setSidebarPosition(savedPosition)
-  }
+  }, [savedPosition])
 
   return (
     <SidebarPositionContext.Provider value={{
