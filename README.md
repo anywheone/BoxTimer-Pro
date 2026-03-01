@@ -1,84 +1,113 @@
 # BoxTimer Pro
 
-A professional timer application built with Next.js 14, TypeScript, and Tailwind CSS.
+タイムボックス法を活用した生産性向上アプリ。タスクに時間を割り当て、集中して取り組み、振り返りまでをワンストップで管理できます。
 
-## Features
+## 機能一覧
 
-- ⏱️ Timer functionality
-- ⏱️ Stopwatch functionality  
-- ⚙️ Settings management
-- 📱 Responsive design
-- 🌙 Dark mode support
+- **タイムボックス管理** — タスクの作成・編集・削除、予定日設定、ドラッグ&ドロップによる並び替え
+- **タイマー機能** — カウントダウン表示（ブラウザのタブタイトルにも残り時間を表示）
+- **振り返りページ** — 実施済みタスクへのコメント追加と実施時間の確認
+- **設定管理** — ダークモード、アラーム音の種類と音量、デスクトップ通知
+- **レスポンシブデザイン** — PC・スマホ両対応、スマホではサイドバーをスライドオーバーで表示
 
-## Tech Stack
+## 技術スタック
 
-- **Framework**: Next.js 14 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Linting**: ESLint
+| 分類 | 使用技術 |
+|------|----------|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| UI Components | shadcn/ui |
+| Drag & Drop | @dnd-kit/core, @dnd-kit/sortable |
+| データ永続化 | IndexedDB (タスク), localStorage (タイマー状態・設定) |
+| Linting | ESLint |
 
-## Getting Started
+## セットアップ
 
-### Prerequisites
-
-- Node.js 18.17 or later
-- npm or yarn
-
-### Installation
-
-1. Clone the repository
 ```bash
-git clone <repository-url>
-cd BoxTimer-Pro
-```
-
-2. Install dependencies
-```bash
+# 依存関係インストール
 npm install
-```
 
-3. Start the development server
-```bash
+# 開発サーバー起動
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+[http://localhost:3000](http://localhost:3000) をブラウザで開く。
 
-## Available Scripts
+```bash
+npm run build   # プロダクションビルド
+npm run start   # プロダクションサーバー起動
+npm run lint    # ESLint実行
+```
 
-- `npm run dev` - Start the development server
-- `npm run build` - Build the application for production
-- `npm run start` - Start the production server
-- `npm run lint` - Run ESLint
-
-## Project Structure
+## プロジェクト構成
 
 ```
 src/
 ├── app/
-│   ├── globals.css      # Global styles
-│   ├── layout.tsx       # Root layout component
-│   └── page.tsx         # Home page component
-├── components/          # Reusable components (to be created)
-└── lib/                 # Utility functions (to be created)
+│   ├── timebox-manager/   # タイムボックス管理（メイン画面）
+│   ├── review/            # 振り返りページ
+│   ├── planning-fallacy/  # 計画錯誤チェック
+│   ├── ToDo/              # Todoリスト
+│   ├── settings/          # 設定ページ
+│   ├── header.tsx         # ヘッダー
+│   └── layout.tsx         # ルートレイアウト
+├── components/
+│   ├── ui/                # shadcn/ui コンポーネント群
+│   ├── NoFlashScript.tsx  # ダークモード初期化（チラつき防止）
+│   └── ThemeProvider.tsx  # テーマ管理
+├── hooks/
+│   └── use-mobile.tsx     # スマホ判定カスタムフック
+└── lib/
+    ├── indexeddb.ts        # IndexedDB CRUD操作
+    ├── timer-manager.ts    # タイマー状態管理（シングルトン）
+    ├── sounds.ts           # アラーム音再生
+    ├── theme-manager.ts    # ダークモード管理
+    └── utils.ts            # ユーティリティ
 ```
 
-## Development
+## 気を付けて作った点
 
-This project uses:
-- **App Router** for routing
-- **TypeScript** for type safety
-- **Tailwind CSS** for styling
-- **ESLint** for code linting
+### データ永続化の設計
 
-## Contributing
+**IndexedDB と localStorage の役割分担**を明確にしました。
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- **IndexedDB** — タスクデータ本体（タイトル・時間・予定日・振り返りコメントなど）
+  - スキーマのバージョン管理を実装し、フィールド追加時に既存データを安全に移行できるようにした
+- **localStorage** — タイマーの実行状態と設定値
+  - ページ遷移・タブ切り替えをまたいでタイマーを継続させるため、`startTime` と `endTime` を保存し、復帰時は経過時間を差し引いて正確な残り時間を算出する
 
-## License
+### タイマーの精度と共有
 
-This project is licensed under the MIT License.
+`TimerManager` をシングルトンとして実装し、複数コンポーネント間でタイマー状態を一元管理しています。他タブでの状態変化も `storage` イベントで検知して同期するため、タブを複数開いても表示がずれません。
+
+ブラウザのタブタイトルにも残り時間をリアルタイム表示することで、別タブ作業中でも進捗を把握できるようにしました。
+
+### 画面描画のチラつき防止
+
+ダークモードの切り替えや、スマホ用サイドバーの位置（左/右）など、**localStorage から初期値を読む設定は SSR のタイミングで値がわからない**ため、ハイドレーション後に値が反映されると一瞬ちらつきます。
+
+これを防ぐため：
+- **ダークモード** — `<NoFlashScript>` としてレイアウトの先頭に `<script>` タグを直接埋め込み、DOMが描画される前にクラスを設定
+- **サイドバー位置** — ヘッダーと AppSidebar が localStorage から直接初期値を読み込み、Context の非同期更新を待たずに初回レンダリングで正しい位置を表示
+
+### Context API の無限ループ対策
+
+サイドバー位置を Context で管理する際、Context 内の関数を `useCallback` でメモ化しなかったことが原因で `useEffect` が無限ループに陥る問題が発生しました。Context 内の関数はすべて `useCallback` で安定した参照を持つよう徹底しています。
+
+### レスポンシブデザイン
+
+PC とスマホで UX を分けています：
+- **PC** — サイドバーは常時表示（固定幅）
+- **スマホ** — サイドバーはスライドオーバー（右端の固定ボタンで開閉）。開閉ボタンはページ遷移後も位置が変わらないよう localStorage で状態を保持
+- **スマホではデスクトップ通知設定を非表示** — 使用できない機能をUIに出さない
+
+### アクセシビリティ・UX
+
+- タスク名・詳細が長い場合は省略表示とし、ホバーでツールチップに全文を表示
+- ドラッグ&ドロップ（@dnd-kit）はポインター操作だけでなくキーボード操作にも対応
+- 振り返りページでは実際の実施時間（秒単位）を記録・表示し、計画との差分を把握できるようにした
+
+## ライセンス
+
+MIT
